@@ -40,8 +40,8 @@ interface Questions {
   alternatives: alternatives[]
 }
 
-// const serverURL = 'https://quizinho-server.onrender.com'
-const serverURL = 'http://localhost:3001'
+const serverURL = 'https://quizinho-server.onrender.com'
+// const serverURL = 'http://localhost:3001'
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState<boolean>(false)
