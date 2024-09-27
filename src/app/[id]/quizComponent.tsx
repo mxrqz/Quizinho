@@ -16,7 +16,6 @@ interface Question {
     alternatives: Alternative[];
 }
 
-
 const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState<number>(0);
     const [selectedAlternative, setSelectedAlternative] = React.useState<string | null>(null);

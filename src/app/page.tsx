@@ -17,7 +17,6 @@ import { Label } from "@/components/ui/label";
 // import Loader from "./components/ui/loading";
 // import axios from 'axios'
 import * as qr from '@bitjson/qr-code'
-qr.defineCustomElements(window);
 
 // import useWindowSize from 'react-use/lib/useWindowSize'
 // import SizedConfetti from 'react-confetti'
@@ -27,7 +26,7 @@ import { format } from 'date-fns'
 // import { QRCodeSVG } from 'qrcode.react';
 
 // import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton,  TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share'
-import { WhatsappIcon, WhatsappShareButton} from 'react-share'
+import { WhatsappIcon, WhatsappShareButton } from 'react-share'
 import Image from "next/image";
 
 
@@ -56,6 +55,12 @@ export default function Home() {
       setDarkMode(false)
     }
   }, [])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      qr.defineCustomElements(window);
+    }
+  }, []);
 
   const setMode = (mode: "light" | "dark") => {
     localStorage.theme = mode
@@ -551,7 +556,7 @@ export default function Home() {
               <div className="flex items-center px-2 py-1 border border-muted-foreground rounded-full w-[75%] lg:w-[35%] focus-within:w-[80%] lg:focus-within:w-[40%] focus-within:border-primary transition-all">
                 <Input type="text" className="border-none focus-visible:ring-0 text-lg"
                   value={question}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>)=> {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const hasValue = e.currentTarget.value.length > 0;
                     if (hasValue !== inputHasValue) {
                       setInputHasValue(hasValue);
