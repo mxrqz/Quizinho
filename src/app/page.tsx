@@ -1,8 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-// import { ArrowRight, ArrowRightCircle, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X } from "lucide-react";
 import { ArrowRight, ArrowRightCircle, EllipsisVertical, MoonStar, Plus, Sun, Trash2 } from "lucide-react";
 
 import LogoSvg from "@/components/svg";
@@ -14,12 +13,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label";
-// import Loader from "./components/ui/loading";
-// import axios from 'axios'
+import Loader from "@/components/ui/loading";
+import axios from 'axios'
 import * as qr from '@bitjson/qr-code'
 
-// import useWindowSize from 'react-use/lib/useWindowSize'
-// import SizedConfetti from 'react-confetti'
+import useWindowSize from 'react-use/lib/useWindowSize'
+import SizedConfetti from 'react-confetti'
 
 import { format } from 'date-fns'
 
@@ -27,8 +26,7 @@ import { format } from 'date-fns'
 
 // import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton,  TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share'
 import { WhatsappIcon, WhatsappShareButton } from 'react-share'
-import Image from "next/image";
-
+// import Image from "next/image";
 
 interface alternatives {
   alternative: string,
@@ -41,6 +39,7 @@ interface Questions {
 }
 
 // const serverURL = 'https://quizinho-server.onrender.com'
+const serverURL = 'http://localhost:3001'
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState<boolean>(false)
@@ -82,8 +81,9 @@ export default function Home() {
   const [question, setQuestion] = useState<string>('')
   const [alternatives, setAlternatives] = useState<string[]>([])
   const [checkboxes, setCheckboxes] = useState<boolean[]>(Array(questionsAmount).fill(false))
-  // const [loading, setLoading] = useState<boolean>(false)
-  // const [qrCodeURL, setQrCodeURL] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
+  const [qrCodeURL, setQrCodeURL] = useState<string>('')
+  // const [svgBase64, setSvgBase64] = useState<string>('')
 
   const handleQuestionCreate = () => {
     if (!question || !alternatives) return
@@ -127,36 +127,39 @@ export default function Home() {
     setOriginalQuestion(null);
   };
 
-  // const handleCreateQuizinho = async () => {
-  //   setLoading(true)
-  //   const url = await (await axios.post(`${serverURL}/create-quizinho`, questions)).data
-  //   setQrCodeURL(url)
+  const handleCreateQuizinho = async () => {
+    setLoading(true)
+    const url = await (await axios.post(`${serverURL}/create-quizinho`, questions)).data
+    setQrCodeURL(url)
 
-  //   setTimeout(() => {
-  //     setLoading(false)
-  //   }, 1500);
-  // }
-
-  // const { width, height } = useWindowSize()
-
-  const shareData = {
-    title: 'Quizinho',
-    text: 'Confira esse quiz incrível!',
-    url: 'https://quizinho.me'
+    setTimeout(() => {
+      setLoading(false)
+    }, 1500);
   }
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        console.log('Conteúdo compartilhado com sucesso');
-      } catch (error) {
-        console.error('Erro ao compartilhar:', error);
-      }
-    } else {
-      alert('Compartilhamento não suportado neste navegador.');
+  const { width, height } = useWindowSize()
+
+  const qrCodeContainer = useRef<HTMLDivElement>(null)
+
+  const qrCodeSVGToBase64 = async () => {
+    if (!qrCodeContainer.current) return;
+    const qrCodeElement = qrCodeContainer.current.querySelector('qr-code');
+    if (!qrCodeElement) return;
+    const shadowRoot = qrCodeElement.shadowRoot;
+
+    if (shadowRoot) {
+      const svgElement = shadowRoot.querySelector('svg');
+      if (!svgElement) return;
+
+      const svgString = new XMLSerializer().serializeToString(svgElement);
+
+      const base64SVG = btoa(svgString);
+      // setSvgBase64(`data:image/svg+xml;base64,${base64SVG}`)
+      await axios.post(`${serverURL}/qr-code`, { base64SVG, qrCodeURL })
     }
-  }
+
+    return `${serverURL}/${qrCodeURL}`
+  };
 
   return (
     <main className="flex flex-col gap-8 lg:gap-24 w-full">
@@ -215,7 +218,7 @@ export default function Home() {
           <div className="w-full h-12 bg-neutral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
 
             <div className="size-5">
-              <Image src="./quizinho-light-purple.svg" alt="quizinho logo" width={24} height={24} />
+              <img src="./quizinho-light-purple.svg" alt="quizinho logo" />
             </div>
 
             <ul className="flex gap-2 items-center h-full">
@@ -434,7 +437,7 @@ export default function Home() {
                 </DialogTrigger>
 
                 <DialogContent className="h-fit w-[80%] lg:w-fit rounded-md transition-all">
-                  {/* {!loading && !qrCodeURL && (
+                  {!loading && !qrCodeURL && (
                     <>
                       <DialogHeader>
                         <DialogTitle className="text-xl">Pronto para criar o seu Quizinho?</DialogTitle>
@@ -453,9 +456,9 @@ export default function Home() {
                         <Button onClick={handleCreateQuizinho} className="w-fit">Criar</Button>
                       </DialogFooter>
                     </>
-                  )} */}
+                  )}
 
-                  {/* {loading && !qrCodeURL && (
+                  {loading && !qrCodeURL && (
                     <div className="w-full flex flex-col gap-5">
 
                       <DialogHeader>
@@ -467,32 +470,32 @@ export default function Home() {
 
                       <Loader className={"self-center"} />
                     </div>
-                  )} */}
+                  )}
 
-                  {/* {!loading && qrCodeURL && ( */}
-                  <>
-                    <DialogHeader>
-                      <DialogTitle className="text-lg">Seu Quizinho está pronto!</DialogTitle>
-                      <DialogDescription className="text-muted-foreground text-base text-justify text-pretty lg:text-left">
-                        Agora é só compartilhar com quem você ama!
-                        Use o QR code abaixo para enviar seu Quizinho e descobrir o quanto ele(a) te conhece.
-                      </DialogDescription>
-                    </DialogHeader>
+                  {!loading && qrCodeURL && (
+                    <>
+                      <DialogHeader>
+                        <DialogTitle className="text-lg">Seu Quizinho está pronto!</DialogTitle>
+                        <DialogDescription className="text-muted-foreground text-base text-justify text-pretty lg:text-left">
+                          Agora é só compartilhar com quem você ama!
+                          Use o QR code abaixo para enviar seu Quizinho e descobrir o quanto ele(a) te conhece.
+                        </DialogDescription>
+                      </DialogHeader>
 
-                    <div className="w-full h-fit flex flex-col items-center gap-5 justify-center">
-                      <div className="w-fit h-fit bg-foreground rounded-lg">
-                        <qr-code
-                          contents={'qrCodeURL'}
-                          module-color="#3dccc7"
-                          position-ring-color="#cfbaf0"
-                          position-center-color="#3dccc7"
-                          mask-x-to-y-ratio="1.2"
-                        >
-                          <Image alt="" src="./quizinho-light-purple.svg" slot="icon" />
-                        </qr-code>
-                      </div>
+                      <div className="w-full h-fit flex flex-col items-center gap-5 justify-center">
+                        <div ref={qrCodeContainer} className="w-fit h-fit bg-foreground rounded-lg">
+                          <qr-code
+                            contents={'qrCodeURL'}
+                            module-color="#3dccc7"
+                            position-ring-color="#cfbaf0"
+                            position-center-color="#3dccc7"
+                            mask-x-to-y-ratio="1.2"
+                          >
+                            <img alt="" src="./quizinho-light-purple.svg" slot="icon" />
+                          </qr-code>
+                        </div>
 
-                      {/* <QRCodeSVG
+                        {/* <QRCodeSVG
                           value={'te amo mto momo'}
                           // title={"Title for my QR Code"}
                           size={256}
@@ -511,18 +514,19 @@ export default function Home() {
                           }}
                         /> */}
 
-                      {/* <a href={qrCodeURL} target="_black">
-                        <span>{qrCodeURL}</span>
-                      </a> */}
+                        <a href={qrCodeURL} target="_black">
+                          <span>{qrCodeSVGToBase64()}</span>
+                        </a>
 
-                      <Button onClick={handleShare}>Compartilhar</Button>
 
-                      <div className="flex gap-2">
-                        <WhatsappShareButton windowPosition="windowCenter" title="Quizinho - Crie um quiz para seu amorzinho" separator="" url={'https://trembalajobs.com/elojob'}>
-                          <WhatsappIcon round size={32} />
-                        </WhatsappShareButton>
+                        {/* <Button onClick={}>qrCodeSVGToBase64</Button> */}
 
-                        {/* <TwitterShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
+                        <div className="flex gap-2">
+                          <WhatsappShareButton windowPosition="windowCenter" title="Quizinho - Crie um quiz para seu amorzinho" separator="" url={'https://trembalajobs.com/elojob'}>
+                            <WhatsappIcon round size={32} />
+                          </WhatsappShareButton>
+
+                          {/* <TwitterShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
                           <XIcon round size={32} />
                         </TwitterShareButton>
 
@@ -537,11 +541,11 @@ export default function Home() {
                         <LinkedinShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
                           <LinkedinIcon round size={32} />
                         </LinkedinShareButton> */}
-                      </div>
+                        </div>
 
-                    </div>
-                  </>
-                  {/* )} */}
+                      </div>
+                    </>
+                  )}
 
                 </DialogContent>
               </Dialog>
@@ -616,7 +620,7 @@ export default function Home() {
 
       </div>
 
-      {/* {!loading && qrCodeURL && (
+      {!loading && qrCodeURL && (
         <SizedConfetti
           style={{
             position: 'fixed',
@@ -635,7 +639,7 @@ export default function Home() {
             y: height / 2,
           }}
         />
-      )} */}
+      )}
 
       <div className="w-full h-36 flex justify-center items-center px-4 sm:px-12 lg:px-32">
         <span>© Quizinho {format(new Date, 'yyyy')}</span>
