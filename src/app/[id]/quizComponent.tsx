@@ -4,6 +4,7 @@ import React from 'react'
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import LogoSvg from "@/components/svg";
 // import { MoonStar, Sun } from "lucide-react";
 
 interface Alternative {
@@ -53,6 +54,15 @@ const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
 
     return (
         <>
+            <nav className="flex justify-between items-center absolute w-full top-0 py-2 bg-[#cfbaf0] backdrop-blur px-32 2xl:px-64">
+                <a href="/">
+                    <div className="flex gap-5 items-center">
+                        <LogoSvg size={36} className="fill-white" />
+                        <h1 className="text-3xl font-semibold text-white">Quizinho</h1>
+                    </div>
+                </a>
+            </nav>
+
             {!isQuizCompleted ? (
                 <>
                     <h3 className="text-3xl font-semibold text-center">{currentQuestion.question}</h3>

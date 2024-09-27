@@ -2,47 +2,54 @@
 import React from 'react'
 import { Metadata } from 'next';
 import axios from 'axios';
-import LogoSvg from "@/components/svg";
 import QuizComponent from "./quizComponent";
 
-interface Alternative {
-    alternative: string;
-    correct: boolean;
-}
+// interface Alternative {
+//     alternative: string;
+//     correct: boolean;
+// }
 
-interface Question {
-    question: string;
-    alternatives: Alternative[];
-}
+// interface Question {
+//     question: string;
+//     alternatives: Alternative[];
+// }
 
-const serverURL = 'https://quizinho-server.onrender.com';
+// const serverURL = 'https://quizinho-server.onrender.com';
 
-async function fetchQuizData(id: string): Promise<Question[]> {
-    const response = await axios.get(`${serverURL}/get-quizinho/${id}`);
-    return response.data.quizinho;
+
+const serverURL = 'http://localhost:3001'
+
+async function fetchQuizData(id: string, type: string) {
+    const { quizinho, qrCode } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data;
+
+    if (type === 'quizinho') {
+        return quizinho
+    } else if (type === 'qrCode') {
+        return qrCode
+    }
+
+    return quizinho
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+    const qrCode = await fetchQuizData(params.id, "qrCode")
+
     return {
         title: `Quiz ${params.id}`,
-        description: `Participa do quiz ${params.id}`
+        description: `Participa do quiz ${params.id}`,
+        openGraph: {
+            title: `Teste ${params.id}`,
+            description: `Participe do quiz ${params.id}`,
+            images: qrCode,
+        },
     };
 }
 
 const QuizPage = async ({ params }: { params: { id: string } }) => {
-    const quizinho = await fetchQuizData(params.id);
+    const quizinho = (await fetchQuizData(params.id, "quizinho")).quizinho;
 
     return (
         <div className="w-full h-screen flex flex-col items-center justify-center gap-2">
-            <nav className="flex justify-between items-center absolute w-full top-0 py-2 bg-[#cfbaf0] backdrop-blur px-32 2xl:px-64">
-                <a href="/">
-                    <div className="flex gap-5 items-center">
-                        <LogoSvg size={36} className="fill-white" />
-                        <h1 className="text-3xl font-semibold text-white">Quizinho</h1>
-                    </div>
-                </a>
-            </nav>
-
             <QuizComponent quizinho={quizinho} />
         </div>
     );

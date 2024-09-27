@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowRightCircle, EllipsisVertical, MoonStar, Plus, Sun, Trash2 } from "lucide-react";
 
@@ -15,13 +15,15 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Label } from "@/components/ui/label";
 import Loader from "@/components/ui/loading";
 import axios from 'axios'
+
+import { toPng } from 'html-to-image'
+
 import * as qr from '@bitjson/qr-code'
+// import { defineCustomElements } from "@bitjson/qr-code";
 
 import useWindowSize from 'react-use/lib/useWindowSize'
 import SizedConfetti from 'react-confetti'
-
 import { format } from 'date-fns'
-
 // import { QRCodeSVG } from 'qrcode.react';
 
 // import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton,  TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share'
@@ -44,22 +46,6 @@ const serverURL = 'http://localhost:3001'
 export default function Home() {
   const [darkMode, setDarkMode] = useState<boolean>(false)
   const [inputHasValue, setInputHasValue] = useState<boolean>(false)
-
-  useEffect(() => {
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark')
-      setDarkMode(true)
-    } else {
-      document.documentElement.classList.remove('dark')
-      setDarkMode(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      qr.defineCustomElements(window);
-    }
-  }, []);
 
   const setMode = (mode: "light" | "dark") => {
     localStorage.theme = mode
@@ -139,27 +125,99 @@ export default function Home() {
 
   const { width, height } = useWindowSize()
 
-  const qrCodeContainer = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    // const qrCodeSVGToBase64 = async () => {
+    //   const qrCodeElement = document.querySelector('qr-code');
+    //   if (!qrCodeElement) return;
+    //   const shadowRoot = qrCodeElement.shadowRoot;
 
-  const qrCodeSVGToBase64 = async () => {
-    if (!qrCodeContainer.current) return;
-    const qrCodeElement = qrCodeContainer.current.querySelector('qr-code');
-    if (!qrCodeElement) return;
-    const shadowRoot = qrCodeElement.shadowRoot;
+    //   if (shadowRoot) {
+    //     const svgElement = shadowRoot.querySelector('svg');
+    //     if (!svgElement) return;
 
-    if (shadowRoot) {
-      const svgElement = shadowRoot.querySelector('svg');
-      if (!svgElement) return;
+    //     const svgString = new XMLSerializer().serializeToString(svgElement);
 
-      const svgString = new XMLSerializer().serializeToString(svgElement);
+    //     const base64SVG = btoa(svgString);
+    //     // setSvgBase64(`data:image/svg+xml;base64,${base64SVG}`)
 
-      const base64SVG = btoa(svgString);
-      // setSvgBase64(`data:image/svg+xml;base64,${base64SVG}`)
-      await axios.post(`${serverURL}/qr-code`, { base64SVG, qrCodeURL })
+    //     await axios.post(`${serverURL}/qr-code`, { base64SVG: `data:image/svg+xml;base64,${base64SVG}`, qrCodeURL })
+    //   }
+    // };
+
+    const qrCodeToPNG = async () => {
+      const qrCodeElement = document.querySelector('qr-code');
+      if (!qrCodeElement) return;
+      const shadowRoot = qrCodeElement.shadowRoot;
+      let svgElement
+      if (shadowRoot) {
+        svgElement = shadowRoot.querySelector('svg');
+      };
+      const imgElement = qrCodeElement.querySelector('img')
+      if (!imgElement || !svgElement) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'relative';
+      wrapper.style.display = 'inline-block';
+
+      document.body.appendChild(wrapper);
+
+      const clonedSvg = svgElement.cloneNode(true) as SVGElement;
+      clonedSvg.style.position = 'relative';
+
+      wrapper.appendChild(clonedSvg);
+
+      const clonedImg = imgElement.cloneNode(true) as HTMLImageElement;
+      clonedImg.style.position = 'absolute';
+      clonedImg.style.left = '50%';
+      clonedImg.style.top = '50%';
+      clonedImg.style.width = '60px';
+      clonedImg.style.height = '60px';
+      clonedImg.style.transform = 'translate(-50%, -50%)';
+      wrapper.appendChild(clonedImg);
+
+      try {
+        const pngDataUrl = await toPng(wrapper, { quality: 1 });
+
+        await axios.post(`${serverURL}/qr-code`, { pngDataUrl, qrCodeURL })
+        // const link = document.createElement('a');
+        // link.href = pngDataUrl;
+        // link.download = 'qr-code.png';
+        // link.click();
+      } catch (error) {
+        console.error('Erro ao converter QR Code para PNG:', error);
+      }
     }
 
-    return `${serverURL}/${qrCodeURL}`
-  };
+    const qrCodeElement = document.querySelector('qr-code');
+    if (qrCodeElement) {
+      qrCodeElement.addEventListener('codeRendered', () => {
+        // qrCodeSVGToBase64()
+        qrCodeToPNG()
+      });
+    }
+
+    return () => {
+      if (qrCodeElement) {
+        qrCodeElement.removeEventListener('codeRendered', console.log);
+      }
+    };
+  }, [qrCodeURL, loading]);
+
+  useEffect(() => {
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark')
+      setDarkMode(true)
+    } else {
+      document.documentElement.classList.remove('dark')
+      setDarkMode(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      qr.defineCustomElements(window);
+    }
+  }, []);
 
   return (
     <main className="flex flex-col gap-8 lg:gap-24 w-full">
@@ -335,7 +393,7 @@ export default function Home() {
                                             if (a.alternative === alternative.alternative) {
                                               return {
                                                 ...a,
-                                                correct: e === true // Atualiza o valor do checkbox para verdadeiro ou falso
+                                                correct: e === true
                                               };
                                             }
                                             return a;
@@ -483,13 +541,14 @@ export default function Home() {
                       </DialogHeader>
 
                       <div className="w-full h-fit flex flex-col items-center gap-5 justify-center">
-                        <div ref={qrCodeContainer} className="w-fit h-fit bg-foreground rounded-lg">
+                        <div className="w-fit h-fit bg-foreground rounded-lg">
                           <qr-code
                             contents={'qrCodeURL'}
                             module-color="#3dccc7"
                             position-ring-color="#cfbaf0"
                             position-center-color="#3dccc7"
                             mask-x-to-y-ratio="1.2"
+                          // onCodeRendered={console.log('teste')}
                           >
                             <img alt="" src="./quizinho-light-purple.svg" slot="icon" />
                           </qr-code>
@@ -515,7 +574,7 @@ export default function Home() {
                         /> */}
 
                         <a href={qrCodeURL} target="_black">
-                          <span>{qrCodeSVGToBase64()}</span>
+                          <span>{qrCodeURL}</span>
                         </a>
 
 
