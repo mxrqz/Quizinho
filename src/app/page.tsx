@@ -213,6 +213,7 @@ export default function Home() {
           </div>
 
           <div className="w-full h-12 bg-neutral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
+
             <div className="size-5">
               <Image src="./quizinho-light-purple.svg" alt="quizinho logo" width={24} height={24} />
             </div>
