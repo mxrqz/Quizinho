@@ -14,8 +14,8 @@ import QuizComponent from "./quizComponent";
 //     alternatives: Alternative[];
 // }
 
-const serverURL = 'https://quizinho-server.onrender.com';
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://quizinho-server.onrender.com';
+const serverURL = 'http://localhost:3001'
 
 
 async function fetchQuizData(id: string, type: string) {
@@ -32,13 +32,12 @@ async function fetchQuizData(id: string, type: string) {
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
     const qrCode = await fetchQuizData(params.id, "qrCode")
-
     return {
-        title: `Quiz ${params.id}`,
-        description: `Participa do quiz ${params.id}`,
+        title: `Quiz ${qrCode}`,
+        description: `Participa do quiz ${qrCode}`,
         openGraph: {
-            title: `Teste ${params.id}`,
-            description: `Participe do quiz ${params.id}`,
+            title: `Teste ${qrCode}`,
+            description: `Participe do quiz ${qrCode}`,
             images: qrCode,
         },
     };
