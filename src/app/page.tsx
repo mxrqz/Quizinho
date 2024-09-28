@@ -20,7 +20,7 @@ import * as qr from '@bitjson/qr-code'
 import useWindowSize from 'react-use/lib/useWindowSize'
 import SizedConfetti from 'react-confetti'
 import { format } from 'date-fns'
-import { delay, motion } from "framer-motion"
+import { motion } from "framer-motion"
 // import { QRCodeSVG } from 'qrcode.react';
 
 // import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton,  TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share'
