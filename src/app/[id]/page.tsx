@@ -14,8 +14,8 @@ import QuizComponent from "./quizComponent";
 //     alternatives: Alternative[];
 // }
 
-const serverURL = 'https://quizinho-server.onrender.com';
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://quizinho-server.onrender.com';
+const serverURL = 'http://localhost:3001'
 
 async function fetchQuizData(id: string) {
     const { quizinho, img } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data;

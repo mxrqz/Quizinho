@@ -7,17 +7,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import LogoSvg from "@/components/svg";
 import { MoonStar, Sun } from "lucide-react";
 
-interface Alternative {
-    alternative: string;
-    correct: boolean;
+interface Questions {
+    question: string,
+    alternatives: string[],
+    correctAlternative: string
 }
 
-interface Question {
-    question: string;
-    alternatives: Alternative[];
-}
-
-const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
+const QuizComponent = ({ quizinho }: { quizinho: Questions[] }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState<number>(0);
     const [selectedAlternative, setSelectedAlternative] = React.useState<string>('');
     const [score, setScore] = React.useState(0);
@@ -36,9 +32,7 @@ const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
             return;
         }
 
-        const isCorrect = currentQuestion.alternatives.find(
-            (alt) => alt.alternative === selectedAlternative
-        )?.correct;
+        const isCorrect = currentQuestion.correctAlternative === selectedAlternative
 
         if (isCorrect) {
             setScore(score + 1);
@@ -93,7 +87,7 @@ const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
                     ))}
                 </ul>
 
-                <img src="./blob_gradient.png" alt="blob" className="absolute left-1/2 -translate-x-1/2 blur-2xl" />
+                <img src="./blob_gradient.png" alt="blob" className="absolute left-1/2 -translate-x-1/2 blur-2xl dark:opacity-10" />
             </div>
 
             <nav className="flex justify-between absolute items-center w-full h-36 top-0 py-2 px-32 2xl:px-64 transition-all">
@@ -124,17 +118,17 @@ const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
                             <RadioGroup onValueChange={handleAlternativeSelect} value={selectedAlternative} className="w-1/2 relative">
                                 {currentQuestion.alternatives.map((alt, index) => (
                                     <div key={index} className={`flex justify-start items-center gap-2 w-full border border-foreground px-5 rounded-lg transition-all
-                                    ${selectedAlternative === alt.alternative ? 'bg-[#cfbaf0] dark:text-background' : ''}`}
+                                    ${selectedAlternative === alt ? 'bg-[#cfbaf0] dark:text-background' : ''}`}
                                     >
                                         <RadioGroupItem
                                             className="border-foreground text-foreground data-[state=checked]:text-foreground data-[state=checked]:border-foreground
                                             dark:data-[state=checked]:text-background dark:data-[state=checked]:border-background
                                         "
-                                            value={alt.alternative}
-                                            id={alt.alternative}
-                                            checked={selectedAlternative === alt.alternative ? true : false}
+                                            value={alt}
+                                            id={alt}
+                                            checked={selectedAlternative === alt ? true : false}
                                         />
-                                        <Label htmlFor={alt.alternative} className="cursor-pointer text-base w-full py-2">{alt.alternative}</Label>
+                                        <Label htmlFor={alt} className="cursor-pointer text-base w-full py-2">{alt}</Label>
                                     </div>
                                 ))}
                             </RadioGroup>
