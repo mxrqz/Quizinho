@@ -15,20 +15,16 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Label } from "@/components/ui/label";
 import Loader from "@/components/ui/loading";
 import axios from 'axios'
-
 import { toPng } from 'html-to-image'
-
 import * as qr from '@bitjson/qr-code'
-// import { defineCustomElements } from "@bitjson/qr-code";
-
 import useWindowSize from 'react-use/lib/useWindowSize'
 import SizedConfetti from 'react-confetti'
 import { format } from 'date-fns'
+import { motion } from "framer-motion"
 // import { QRCodeSVG } from 'qrcode.react';
 
 // import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton,  TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share'
 import { WhatsappIcon, WhatsappShareButton } from 'react-share'
-// import Image from "next/image";
 
 interface alternatives {
   alternative: string,
@@ -40,12 +36,22 @@ interface Questions {
   alternatives: alternatives[]
 }
 
+const questionsAmount = 4
+
 // const serverURL = 'https://quizinho-server.onrender.com'
 const serverURL = 'http://localhost:3001'
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState<boolean>(false)
   const [inputHasValue, setInputHasValue] = useState<boolean>(false)
+  const [questions, setQuestions] = useState<Questions[]>([])
+  const [editingQuestion, setEditingQuestion] = useState<Questions | null>(null);
+  const [originalQuestion, setOriginalQuestion] = useState<Questions | null>(null);
+  const [question, setQuestion] = useState<string>('')
+  const [alternatives, setAlternatives] = useState<string[]>([])
+  const [checkboxes, setCheckboxes] = useState<boolean[]>(Array(questionsAmount).fill(false))
+  const [loading, setLoading] = useState<boolean>(false)
+  const [qrCodeURL, setQrCodeURL] = useState<string>('')
 
   const setMode = (mode: "light" | "dark") => {
     localStorage.theme = mode
@@ -58,18 +64,6 @@ export default function Home() {
 
     setDarkMode(!darkMode)
   }
-
-  const questionsAmount = 4
-
-  const [questions, setQuestions] = useState<Questions[]>([])
-  const [editingQuestion, setEditingQuestion] = useState<Questions | null>(null);
-  const [originalQuestion, setOriginalQuestion] = useState<Questions | null>(null);
-  const [question, setQuestion] = useState<string>('')
-  const [alternatives, setAlternatives] = useState<string[]>([])
-  const [checkboxes, setCheckboxes] = useState<boolean[]>(Array(questionsAmount).fill(false))
-  const [loading, setLoading] = useState<boolean>(false)
-  const [qrCodeURL, setQrCodeURL] = useState<string>('')
-  // const [svgBase64, setSvgBase64] = useState<string>('')
 
   const handleQuestionCreate = () => {
     if (!question || !alternatives) return
@@ -126,24 +120,6 @@ export default function Home() {
   const { width, height } = useWindowSize()
 
   useEffect(() => {
-    // const qrCodeSVGToBase64 = async () => {
-    //   const qrCodeElement = document.querySelector('qr-code');
-    //   if (!qrCodeElement) return;
-    //   const shadowRoot = qrCodeElement.shadowRoot;
-
-    //   if (shadowRoot) {
-    //     const svgElement = shadowRoot.querySelector('svg');
-    //     if (!svgElement) return;
-
-    //     const svgString = new XMLSerializer().serializeToString(svgElement);
-
-    //     const base64SVG = btoa(svgString);
-    //     // setSvgBase64(`data:image/svg+xml;base64,${base64SVG}`)
-
-    //     await axios.post(`${serverURL}/qr-code`, { base64SVG: `data:image/svg+xml;base64,${base64SVG}`, qrCodeURL })
-    //   }
-    // };
-
     const qrCodeToPNG = async () => {
       const qrCodeElement = document.querySelector('qr-code');
       if (!qrCodeElement) return;
@@ -179,7 +155,6 @@ export default function Home() {
         const pngDataUrl = await toPng(wrapper, { quality: 1 });
 
         await axios.post(`${serverURL}/qr-code`, { pngDataUrl, qrCodeURL })
-
       } catch (error) {
         console.error('Erro ao converter QR Code para PNG:', error);
       }
@@ -236,21 +211,29 @@ export default function Home() {
 
       <div className="flex flex-col items-center justify-between gap-5 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64">
         <div className="w-full lg:w-[35%] flex flex-col gap-10 justify-center text-pretty">
-          <div className="flex flex-col gap-2">
+
+          <div className="absolute top-10 left-36 w-[30rem] flex items-center blur-2xl opacity-100 dark:opacity-10">
+            <img src="./blob_gradient.png" alt="blob" />
+          </div>
+
+          <div className="relative flex flex-col gap-2">
             <h2 className="text-5xl font-semibold">Descubra se seu amor te conhece de <span className="inline-block bg-primary text-primary-foreground w-fit rounded-md px-4 py-1">verdade!</span></h2>
             <p className="text-xl font-medium">Crie um quiz personalizado e divertido para o seu namorado(a) e compartilhe através de um QR code único!</p>
           </div>
 
-          <Button variant={'ghost'} className="px-0 w-fit text-lg flex gap-2 hover:bg-transparent hover:text-primary transition-colors group hover:underline">
+          <Button variant={'ghost'} className="relative px-0 w-fit text-lg flex gap-2 hover:bg-transparent hover:text-primary transition-colors group hover:underline">
             Crie seu Quizinho
             <ArrowRight className="group-hover:translate-x-1.5 transition-transform" />
           </Button>
         </div>
 
-        <div className="w-[75%] lg:w-[50%] max-h-max aspect-video border rounded-lg lg:rounded-2xl relative flex flex-col 
-          after:absolute after:w-full after:h-full after:translate-x-1.5 after:translate-y-1.5 lg:after:translate-x-5 lg:after:translate-y-5
-          after:rounded-lg lg:after:rounded-2xl after:bg-primary after:-z-10
-        ">
+        <div className="w-[75%] lg:w-[50%] max-h-max aspect-video border rounded-lg lg:rounded-2xl relative flex flex-col">
+
+          <motion.div className="absolute top-0 left-0 w-full h-full">
+            <div className="absolute w-full h-full bg-primary -z-10 rounded-lg lg:rounded-2xl 
+            translate-x-1.5 translate-y-1.5 lg:translate-x-5 lg:translate-y-5">
+            </div>
+          </motion.div>
           {/* fazer animaçãozinha da "sombra". Adicionar outra com a cor [#cfbaf0] mais deslocada */}
 
           <div className="w-2/4 h-2/4 absolute top-0 -translate-y-1/3 left-0 -translate-x-1/3 flex items-center overflow-hidden -z-20">
@@ -269,7 +252,7 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="w-full h-12 bg-neutral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
+          <div className="w-full h-12 bg-ne utral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
 
             <div className="size-5">
               <img src="./quizinho-light-purple.svg" alt="quizinho logo" />
@@ -284,7 +267,7 @@ export default function Home() {
 
           {/* <iframe src="https://quizinho.me/JArEt" className="w-full h-full rounded-b-2xl relative"></iframe> */}
 
-          <div className="w-full h-full rounded-b-lg lg:rounded-b-2xl relative bg-white"></div>
+          <div className="w-full h-full rounded-b-lg lg:rounded-b-2xl relative bg-wh ite"></div>
 
         </div>
       </div>

@@ -26,11 +26,11 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     const quizData = await fetchQuizData(params.id)
 
     return {
-        title: "Teste seu amor com meu Quizinho!",
-        description: "Clique para descobrir o quanto você me conhece! Vamos ver quantas você acerta!",
+        title: "Será que você acerta meu Quizinho?",
+        description: "Tente responder e veja quantas você acerta!",
         openGraph: {
-            title: "Teste seu amor com meu Quizinho!",
-            description: "Clique para descobrir o quanto você me conhece! Vamos ver quantas você acerta!",
+            title: "Será que você acerta meu Quizinho?",
+            description: "Tente responder e veja quantas você acerta!",
             images: quizData.img,
         },
     };

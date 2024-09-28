@@ -95,9 +95,30 @@ const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
             </nav>
 
             {!isQuizCompleted ? (
-                <>
-                    <h3 className="text-3xl font-semibold text-center">{currentQuestion.question}</h3>
-                    <RadioGroup onValueChange={handleAlternativeSelect} className="w-fit">
+                <div className="border border-primary bg-background w-1/3 h-1/3 gap-5 flex flex-col items-center justify-center rounded-lg">
+                    <div className="w-full h-full absolute top-0 left-0 flex items-center overflow-hidden -z-20">
+                        <ul className="w-full aspect-square grid grid-cols-[repeat(15,minmax(0,1fr))] grid-rows-[repeat(15,minmax(0,1fr))] scale-125 maskImage">
+                            {Array.from({ length: (15 * 15) }).map((_, index) => (
+                                <li key={index} className="border-b border-r border-primary"></li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* <div className="w-1/3 h-1/3 absolute bottom-0 translate-y-1/2 right-0 translate-x-1/2 -z-20">
+                        <ul className="grid grid-cols-9 grid-rows-9 place-items-center w-full h-full maskImage2">
+                            {Array.from({ length: (9 * 9) }).map((_, index) => (
+                                <li key={index} className="size-1 bg-primary rounded-full"></li>
+                            ))}
+                        </ul>
+                    </div> */}
+
+
+                    <h3 className="text-3xl font-semibold text-center relative">
+                        {/* kasjdkajsdkajskdjaksdjka skdja sdkas dkas dkajskdaj skdja saksj */}
+                        {currentQuestion.question}
+                    </h3>
+
+                    <RadioGroup onValueChange={handleAlternativeSelect} className="w-fit relative">
                         {currentQuestion.alternatives.map((alt, index) => (
                             <div key={index} className="flex justify-start items-center gap-2 w-full">
                                 <RadioGroupItem
@@ -109,10 +130,11 @@ const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
                             </div>
                         ))}
                     </RadioGroup>
-                    <Button onClick={handleNextQuestion} disabled={!selectedAlternative}>
+
+                    <Button onClick={handleNextQuestion} disabled={!selectedAlternative} className="relative">
                         Próxima
                     </Button>
-                </>
+                </div>
             ) : (
                 <div>
                     <h2>Quiz finalizado!</h2>
