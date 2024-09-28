@@ -19,7 +19,7 @@ interface Question {
 
 const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState<number>(0);
-    const [selectedAlternative, setSelectedAlternative] = React.useState<string | null>(null);
+    const [selectedAlternative, setSelectedAlternative] = React.useState<string>('');
     const [score, setScore] = React.useState(0);
     const [isQuizCompleted, setIsQuizCompleted] = React.useState(false);
     const [darkMode, setDarkMode] = React.useState<boolean>(false)
@@ -47,9 +47,18 @@ const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
         const nextQuestionIndex = currentQuestionIndex + 1;
         if (nextQuestionIndex < quizinho.length) {
             setCurrentQuestionIndex(nextQuestionIndex);
-            setSelectedAlternative(null); // Reseta a seleção para a próxima pergunta
+            setSelectedAlternative('');
         } else {
-            setIsQuizCompleted(true); // Terminar o quiz
+            setIsQuizCompleted(true);
+        }
+    };
+
+    const handlePreviousQuestion = () => {
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex(currentQuestionIndex - 1);
+            setSelectedAlternative('');
+        } else {
+            alert('Você está na primeira pergunta.');
         }
     };
 
@@ -76,72 +85,79 @@ const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
     }, [])
 
     return (
-        <>
-            <nav className="flex justify-between items-center absolute w-full top-0 py-2 bg-[#cfbaf0] backdrop-blur px-32 2xl:px-64">
+        <div className="w-full h-screen bg-background flex flex-col">
+            <div className="w-full h-full absolute top-0 left-0 flex items-center overflow-hidden blur-sm maskImageCircle">
+                <ul className="w-full aspect-square grid grid-cols-[repeat(15,minmax(0,1fr))] grid-rows-[repeat(15,minmax(0,1fr))] scale-125">
+                    {Array.from({ length: (15 * 15) }).map((_, index) => (
+                        <li key={index} className="border-b-2 border-r-2 dark:border-b dark:border-r border-[#cfbaf0] transition-all"></li>
+                    ))}
+                </ul>
+
+                <img src="./blob_gradient.png" alt="blob" className="absolute left-1/2 -translate-x-1/2 blur-2xl" />
+            </div>
+
+            <nav className="flex justify-between absolute items-center w-full h-36 top-0 py-2 px-32 2xl:px-64 transition-all">
                 <a href="/">
                     <div className="flex gap-5 items-center">
-                        <LogoSvg size={36} className="fill-white" />
-                        <h1 className="text-3xl font-semibold text-white">Quizinho</h1>
+                        <LogoSvg size={36} className="fill-foreground transition-all" />
+                        <h1 className="text-3xl font-semibold text-foreground transition-all">Quizinho</h1>
                     </div>
                 </a>
 
                 <div>
                     {darkMode ? (
-                        <MoonStar color="white" cursor={'pointer'} onClick={() => setMode('light')} />
+                        <MoonStar className="text-foreground transition-all" cursor={'pointer'} onClick={() => setMode('light')} />
                     ) : (
-                        <Sun color="white" cursor={'pointer'} onClick={() => setMode('dark')} />
+                        <Sun className="text-foreground transition-all" cursor={'pointer'} onClick={() => setMode('dark')} />
                     )}
                 </div>
             </nav>
 
-            {!isQuizCompleted ? (
-                <div className="border border-primary bg-background w-1/3 h-1/3 gap-5 flex flex-col items-center justify-center rounded-lg">
-                    <div className="w-full h-full absolute top-0 left-0 flex items-center overflow-hidden -z-20">
-                        <ul className="w-full aspect-square grid grid-cols-[repeat(15,minmax(0,1fr))] grid-rows-[repeat(15,minmax(0,1fr))] scale-125 maskImage">
-                            {Array.from({ length: (15 * 15) }).map((_, index) => (
-                                <li key={index} className="border-b border-r border-primary"></li>
-                            ))}
-                        </ul>
+            <div className="w-full h-full flex items-center justify-center">
+                {!isQuizCompleted ? (
+                    <div className="flex flex-col w-1/2 gap-5 items-center relative">
+                        <div className="border border-primary bg-background w-full h-full min-h-64 p-5 gap-5 flex flex-col items-center justify-center rounded-lg relative">
+                            <h3 className="text-3xl font-semibold text-center relative text-pretty">
+                                {currentQuestion.question}
+                            </h3>
+
+                            <RadioGroup onValueChange={handleAlternativeSelect} value={selectedAlternative} className="w-1/2 relative">
+                                {currentQuestion.alternatives.map((alt, index) => (
+                                    <div key={index} className={`flex justify-start items-center gap-2 w-full border border-foreground px-5 rounded-lg transition-all
+                                    ${selectedAlternative === alt.alternative ? 'bg-[#cfbaf0] dark:text-background' : ''}`}
+                                    >
+                                        <RadioGroupItem
+                                            className="border-foreground text-foreground data-[state=checked]:text-foreground data-[state=checked]:border-foreground
+                                            dark:data-[state=checked]:text-background dark:data-[state=checked]:border-background
+                                        "
+                                            value={alt.alternative}
+                                            id={alt.alternative}
+                                            checked={selectedAlternative === alt.alternative ? true : false}
+                                        />
+                                        <Label htmlFor={alt.alternative} className="cursor-pointer text-base w-full py-2">{alt.alternative}</Label>
+                                    </div>
+                                ))}
+                            </RadioGroup>
+                        </div>
+
+                        <div className="relative bg-background border border-primary rounded-full p-2 w-1/2 flex justify-between gap-2">
+                            <Button onClick={handlePreviousQuestion} disabled={currentQuestionIndex === 0} className="rounded-full w-full bg-foreground hover:bg-foreground/80 text-background">
+                                Anterior
+                            </Button>
+
+                            <Button onClick={handleNextQuestion} disabled={!selectedAlternative} className="rounded-full w-full bg-foreground hover:bg-foreground/80 text-background">
+                                {currentQuestionIndex + 1 < quizinho.length ? 'Proxima' : 'Finalizar'}
+                            </Button>
+                        </div>
                     </div>
-
-                    {/* <div className="w-1/3 h-1/3 absolute bottom-0 translate-y-1/2 right-0 translate-x-1/2 -z-20">
-                        <ul className="grid grid-cols-9 grid-rows-9 place-items-center w-full h-full maskImage2">
-                            {Array.from({ length: (9 * 9) }).map((_, index) => (
-                                <li key={index} className="size-1 bg-primary rounded-full"></li>
-                            ))}
-                        </ul>
-                    </div> */}
-
-
-                    <h3 className="text-3xl font-semibold text-center relative">
-                        {/* kasjdkajsdkajskdjaksdjka skdja sdkas dkas dkajskdaj skdja saksj */}
-                        {currentQuestion.question}
-                    </h3>
-
-                    <RadioGroup onValueChange={handleAlternativeSelect} className="w-fit relative">
-                        {currentQuestion.alternatives.map((alt, index) => (
-                            <div key={index} className="flex justify-start items-center gap-2 w-full">
-                                <RadioGroupItem
-                                    value={alt.alternative}
-                                    id={alt.alternative}
-                                    checked={selectedAlternative === alt.alternative}
-                                />
-                                <Label htmlFor={alt.alternative} className="cursor-pointer text-xl">{alt.alternative}</Label>
-                            </div>
-                        ))}
-                    </RadioGroup>
-
-                    <Button onClick={handleNextQuestion} disabled={!selectedAlternative} className="relative">
-                        Próxima
-                    </Button>
-                </div>
-            ) : (
-                <div>
-                    <h2>Quiz finalizado!</h2>
-                    <p>Você acertou {score} de {quizinho.length} perguntas.</p>
-                </div>
-            )}
-        </>
+                ) : (
+                    <div className="border border-primary bg-background w-1/2 h-fit min-h-64 p-5 gap-5 flex flex-col items-center justify-center rounded-lg relative">
+                        <h2>Quiz finalizado!</h2>
+                        <p>Você acertou {score} de {quizinho.length} perguntas.</p>
+                    </div>
+                )}
+            </div>
+        </div>
     );
 };
 

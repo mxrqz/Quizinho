@@ -25,15 +25,14 @@ import { motion } from "framer-motion"
 
 // import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton,  TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share'
 import { WhatsappIcon, WhatsappShareButton } from 'react-share'
-
-interface alternatives {
-  alternative: string,
-  correct: boolean
-}
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { StarsBackground } from "@/components/ui/stars-background";
+import { ShootingStars } from "@/components/ui/shooting-stars";
 
 interface Questions {
   question: string,
-  alternatives: alternatives[]
+  alternatives: string[],
+  correctAlternative: string
 }
 
 const questionsAmount = 4
@@ -49,7 +48,7 @@ export default function Home() {
   const [originalQuestion, setOriginalQuestion] = useState<Questions | null>(null);
   const [question, setQuestion] = useState<string>('')
   const [alternatives, setAlternatives] = useState<string[]>([])
-  const [checkboxes, setCheckboxes] = useState<boolean[]>(Array(questionsAmount).fill(false))
+  const [correctAlternative, setCorrectAlternative] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const [qrCodeURL, setQrCodeURL] = useState<string>('')
 
@@ -69,22 +68,17 @@ export default function Home() {
     if (!question || !alternatives) return
     const prevQuestions = [...questions]
 
-    const alternativeWithCheckboxes = alternatives.map((alternative, index) => {
-      return {
-        alternative,
-        correct: checkboxes[index]
-      };
-    });
-
     const newQuestion = {
       question,
-      alternatives: alternativeWithCheckboxes
+      alternatives,
+      correctAlternative
     }
 
     setQuestions([...prevQuestions, newQuestion])
     setQuestion('');
-    setAlternatives(Array(questionsAmount).fill(''));
-    setCheckboxes(Array(questionsAmount).fill(false))
+    setAlternatives([]);
+    setCorrectAlternative('')
+    // setCheckboxes([])
   }
 
   const handleEditStart = (questionToEdit: Questions) => {
@@ -227,20 +221,23 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-col gap-8 lg:gap-24 w-full">
-      <nav className="flex justify-between items-center sticky top-0 py-2 bg-[#cfbaf0] backdrop-blur px-4 sm:px-12 lg:px-32 2xl:px-64 z-20 shadow-lg">
+    <main className="flex flex-col gap-8 lg:gap-24 max-w-full">
+      <ShootingStars  />
+      <StarsBackground starDensity={0.00025} allStarsTwinkle={false} twinkleProbability={0.4} />
+
+      <nav className="flex justify-between items-center lg:items-end sticky left-0 w-full h-12 lg:h-24 top-0 py-2 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64 transition-all backdrop-blur-sm z-10">
         <a href="/">
           <div className="flex gap-5 items-center">
-            <LogoSvg size={36} className="fill-white" />
-            <h1 className={`text-3xl font-semibold text-white`}>Quizinho</h1>
+            <LogoSvg size={36} className="fill-foreground transition-all" />
+            <h1 className="text-3xl font-semibold text-foreground transition-all">Quizinho</h1>
           </div>
         </a>
 
         <div>
           {darkMode ? (
-            <MoonStar color="white" cursor={'pointer'} onClick={() => setMode('light')} />
+            <MoonStar className="text-foreground transition-all" cursor={'pointer'} onClick={() => setMode('light')} />
           ) : (
-            <Sun color="white" cursor={'pointer'} onClick={() => setMode('dark')} />
+            <Sun className="text-foreground transition-all" cursor={'pointer'} onClick={() => setMode('dark')} />
           )}
         </div>
       </nav>
@@ -248,7 +245,7 @@ export default function Home() {
       <div className="flex flex-col items-center justify-between gap-5 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64">
         <div className="w-full lg:w-[35%] flex flex-col gap-10 justify-center text-pretty">
 
-          <div className="absolute top-10 left-36 w-[30rem] flex items-center blur-2xl opacity-100 dark:opacity-10">
+          <div className="absolute top-10 -left-10 lg:left-36 w-fit flex items-center blur-2xl opacity-100 dark:opacity-10">
             <img src="./blob_gradient.png" alt="blob" />
           </div>
 
@@ -278,7 +275,6 @@ export default function Home() {
               variants={item2}>
             </motion.div>
           </motion.div>
-          {/* fazer animaçãozinha da "sombra". Adicionar outra com a cor [#cfbaf0] mais deslocada */}
 
           <div className="w-2/4 h-2/4 absolute top-0 -translate-y-1/3 left-0 -translate-x-1/3 flex items-center overflow-hidden -z-20">
             <ul className="w-full aspect-square grid grid-cols-6 grid-rows-6 absolute scale-125 maskImage">
@@ -325,11 +321,9 @@ export default function Home() {
           <div className="flex flex-col shrink-0 gap-5 w-full lg:w-[25%] text-black">
             <h4 className="text-2xl font-semibold text-center">Perguntas</h4>
 
-            {questions && questions.length > 0 && (
-              <ScrollArea className="h-full">
-                <Accordion type="single" defaultValue={questions[questions.length - 1].question} collapsible
-                  className="flex flex-col gap-5"
-                >
+            <ScrollArea className="h-full">
+              {questions && questions.length > 0 && (
+                <Accordion type="single" defaultValue={questions[questions.length - 1].question} collapsible className="flex flex-col gap-5">
                   {questions.map((question, index) => (
                     <AccordionItem value={question.question} key={index} className="relative group flex flex-col gap-2">
 
@@ -339,8 +333,8 @@ export default function Home() {
                         <ul className="text-base flex flex-col gap-1">
                           {question.alternatives.map((alternative, index) => (
                             <li key={index} className="flex gap-2 items-center">
-                              <Checkbox name={alternative.alternative} checked={alternative.correct} disabled={!alternative.correct} />
-                              {alternative.alternative}
+                              <Checkbox name={alternative} checked={alternative === question.correctAlternative} disabled={alternative !== question.correctAlternative} />
+                              {alternative}
                             </li>
                           ))}
                         </ul>
@@ -358,14 +352,14 @@ export default function Home() {
                               <Button variant={'outline'} className="border-primary py-0 hover:bg-primary hover:border-transparent" onClick={() => handleEditStart(question)}>Editar</Button>
                             </DialogTrigger>
 
-                            <DialogContent className="w-[80%] lg:w-fit rounded-md">
+                            <DialogContent className="w-fit flex flex-col">
                               <DialogHeader>
                                 <DialogTitle>Editar Pergunta</DialogTitle>
                                 <DialogDescription>Tem certeza que deseja atualizar a pergunta?</DialogDescription>
                               </DialogHeader>
 
-                              <div className="grid gap-4 py-4">
-                                <div className="grid grid-rows-2 lg:grid-rows-1 lg:grid-cols-4 items-center gap-4">
+                              <div className="flex flex-col gap-4 py-4">
+                                <div className="flex flex-col items-start gap-2">
                                   <Label htmlFor="pergunta" className="text-start lg:text-right text-nowrap">Pergunta</Label>
                                   <Input
                                     className="col-span-3 h-full min-h-10 border-muted-foreground focus-visible:ring-primary focus-visible:border-none"
@@ -381,91 +375,89 @@ export default function Home() {
                                   />
                                 </div>
 
-                                {editingQuestion?.alternatives.map((alternative, index) => (
-                                  <div key={index} className="grid grid-rows-2 grid-cols-3 lg:grid-rows-1 lg:grid-cols-4 items-center gap-1 lg:gap-4">
-                                    <Label htmlFor={alternative.alternative} className="text-start lg:text-right text-nowrap col-span-3 lg:col-span-1 py-0 space-y-0">Alternativa {index + 1}</Label>
-                                    <Input id={alternative.alternative}
-                                      value={alternative.alternative}
-                                      className="col-span-2 h-full border-muted-foreground focus-visible:border-none focus-visible:ring-primary"
-                                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        const updatedAlternatives = editingQuestion?.alternatives.map(a => {
-                                          if (a.alternative === alternative.alternative) {
-                                            return {
-                                              ...a,
-                                              alternative: e.currentTarget.value
-                                            };
-                                          }
-                                          return a;
-                                        });
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
+                                  {editingQuestion?.alternatives.map((alternative, index) => (
+                                    <div key={index} className="flex flex-col items-start gap-2">
+                                      <Label htmlFor={alternative} className="text-start lg:text-right text-nowrap py-0 space-y-0">Alternativa {index + 1}</Label>
 
-                                        if (editingQuestion) {
-                                          setEditingQuestion({
-                                            ...editingQuestion,
-                                            alternatives: updatedAlternatives
-                                          });
-                                        }
-                                      }}
-                                    />
+                                      <div className="flex w-full gap-2">
+                                        <Input id={alternative}
+                                          value={alternative || ''}
+                                          className="h-9 border-muted-foreground focus-visible:border-none focus-visible:ring-primary"
+                                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                            const updatedAlternatives = editingQuestion?.alternatives.map(a => {
+                                              if (a === alternative) {
+                                                return e.currentTarget.value
+                                              }
+                                              return a
+                                            });
 
-                                    <div className="w-full h-full flex gap-1 lg:gap-2 items-center justify-between">
-                                      <Checkbox
-                                        className="w-1/2 h-full border-muted-foreground focus-visible:ring-primary focus-visible:border-none data-[state=checked]:bg-emerald-500 data-[state=checked]:border-none"
-                                        checked={alternative.correct}
-                                        onCheckedChange={e => {
-                                          const updatedAlternatives = editingQuestion?.alternatives.map(a => {
-                                            if (a.alternative === alternative.alternative) {
-                                              return {
-                                                ...a,
-                                                correct: e === true
-                                              };
+                                            if (editingQuestion) {
+                                              setEditingQuestion({
+                                                ...editingQuestion,
+                                                alternatives: updatedAlternatives
+                                              });
                                             }
-                                            return a;
-                                          });
+                                          }}
+                                        />
 
-                                          if (editingQuestion) {
-                                            setEditingQuestion({
-                                              ...editingQuestion,
-                                              alternatives: updatedAlternatives
-                                            });
-                                          }
-                                        }}
-                                      />
-
-                                      <Button
-                                        className="border-muted-foreground p-0 size-9 bg-red-500 lg:hover:bg-red-500 hover:border-transparent flex items-center justify-center rounded-md cursor-pointer focus-visible:bg-red-500"
-                                        onClick={() => {
-                                          const updatedAlternatives = editingQuestion?.alternatives.filter((_, i) => i !== index);
-                                          if (editingQuestion) {
-                                            setEditingQuestion({
-                                              ...editingQuestion,
-                                              alternatives: updatedAlternatives
-                                            });
-                                          }
-                                        }}
-                                      >
-                                        <Trash2 />
-                                      </Button>
+                                        <Button className="border-muted-foreground p-0 size-9 aspect-square bg-red-500 lg:hover:bg-red-500 hover:border-transparent flex items-center justify-center rounded-md cursor-pointer focus-visible:bg-red-500"
+                                          onClick={() => {
+                                            const updatedAlternatives = editingQuestion?.alternatives.filter((_, i) => i !== index);
+                                            if (editingQuestion) {
+                                              setEditingQuestion({
+                                                ...editingQuestion,
+                                                alternatives: updatedAlternatives
+                                              });
+                                            }
+                                          }}
+                                        >
+                                          <Trash2 />
+                                        </Button>
+                                      </div>
                                     </div>
-                                  </div>
-                                ))}
-
-                                <div className="w-full grid grid-cols-4">
-                                  <Button variant={"outline"} className="border-muted-foreground hover:bg-primary hover:border-none focus-visible:ring-primary focus-visible:border-none hover:text-white focus-visible:bg-primary focus-visible:text-white col-span-4 lg:col-start-2 lg:col-span-3"
-                                    onClick={() => {
-                                      const newAlternative = { alternative: '', correct: false };
-                                      const updatedAlternatives = [...(editingQuestion?.alternatives || []), newAlternative];
-
-                                      if (editingQuestion) {
-                                        setEditingQuestion({
-                                          ...editingQuestion,
-                                          alternatives: updatedAlternatives
-                                        });
-                                      }
-                                    }}
-                                  >
-                                    <Plus />
-                                  </Button>
+                                  ))}
                                 </div>
+
+                                <Button variant={"outline"} className="border-muted-foreground hover:bg-primary hover:border-none focus-visible:ring-primary focus-visible:border-none hover:text-white focus-visible:bg-primary focus-visible:text-white col-span-4 lg:col-start-2 lg:col-span-3"
+                                  onClick={() => {
+                                    const newAlternative = '';
+                                    const updatedAlternatives = [...(editingQuestion?.alternatives || []), newAlternative];
+
+                                    if (editingQuestion) {
+                                      setEditingQuestion({
+                                        ...editingQuestion,
+                                        alternatives: updatedAlternatives
+                                      });
+                                    }
+                                  }}
+                                >
+                                  <Plus />
+                                </Button>
+
+                                <Select value={editingQuestion?.correctAlternative || ''}
+                                  onValueChange={(alternative) => {
+                                    setEditingQuestion(prevQ => {
+                                      if (prevQ) {
+                                        return {
+                                          ...prevQ,
+                                          correctAlternative: alternative,
+                                        };
+                                      }
+                                      return prevQ;
+                                    });
+                                  }}
+                                >
+                                  <SelectTrigger className="focus-visible:ring-primary focus-visible:border-none border-muted-foreground">
+                                    <SelectValue placeholder="Selecione a alternativa correta" />
+                                  </SelectTrigger>
+
+                                  <SelectContent>
+                                    {editingQuestion?.alternatives.map((alt, index) => (
+                                      alt.length > 0 ? <SelectItem key={index} value={alt || ''}>{alt || ''}</SelectItem> : ''
+                                    ))}
+                                  </SelectContent>
+                                </Select>
                               </div>
 
                               <DialogFooter className="flex flex-row justify-end gap-2">
@@ -507,77 +499,75 @@ export default function Home() {
                     </AccordionItem>
                   ))}
                 </Accordion>
-              </ScrollArea>
-            )}
+              )}
+            </ScrollArea>
 
-            {/* Mexer dps para o mobile */}
-            {questions.length >= 2 && (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button>Criar Quizinho</Button>
-                </DialogTrigger>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button disabled={questions.length < 2} className="bg-foreground text-background">Criar Quizinho</Button>
+              </DialogTrigger>
 
-                <DialogContent className="h-fit w-[80%] lg:w-fit rounded-md transition-all">
-                  {!loading && !qrCodeURL && (
-                    <>
-                      <DialogHeader>
-                        <DialogTitle className="text-xl">Pronto para criar o seu Quizinho?</DialogTitle>
-                        <DialogDescription className="text-muted-foreground text-base text-justify text-pretty lg:text-left">
-                          Depois de criar, seu Quizinho estará pronto para ser compartilhado!
-                          Lembre-se, ele não poderá ser editado e ficará disponível por um tempo limitado.
-                          Tem certeza que deseja continuar?
-                        </DialogDescription>
-                      </DialogHeader>
+              <DialogContent className="h-fit w-[80%] lg:w-fit rounded-md transition-all">
+                {!loading && !qrCodeURL && (
+                  <>
+                    <DialogHeader>
+                      <DialogTitle className="text-xl">Pronto para criar o seu Quizinho?</DialogTitle>
+                      <DialogDescription className="text-muted-foreground text-base text-justify text-pretty lg:text-left">
+                        Depois de criar, seu Quizinho estará pronto para ser compartilhado!
+                        Lembre-se, ele não poderá ser editado e ficará disponível por um tempo limitado.
+                        Tem certeza que deseja continuar?
+                      </DialogDescription>
+                    </DialogHeader>
 
 
-                      <DialogFooter className="flex flex-row justify-end gap-5 w-full">
-                        <DialogClose asChild>
-                          <Button variant={"destructive"} className="w-fit">Cancelar</Button>
-                        </DialogClose>
-                        <Button onClick={handleCreateQuizinho} className="w-fit">Criar</Button>
-                      </DialogFooter>
-                    </>
-                  )}
+                    <DialogFooter className="flex flex-row justify-end gap-5 w-full">
+                      <DialogClose asChild>
+                        <Button variant={"destructive"} className="w-fit">Cancelar</Button>
+                      </DialogClose>
+                      <Button onClick={handleCreateQuizinho} className="w-fit">Criar</Button>
+                    </DialogFooter>
+                  </>
+                )}
 
-                  {loading && !qrCodeURL && (
-                    <div className="w-full flex flex-col gap-5">
+                {loading && !qrCodeURL && (
+                  <div className="w-full flex flex-col gap-5">
 
-                      <DialogHeader>
-                        <DialogTitle className="text-xl">Seu Quizinho está quase pronto!</DialogTitle>
-                        <DialogDescription className="text-muted-foreground text-base text-pretty text-justify lg:text-left">Estamos gerando o seu Quizinho cheio de amor e diversão.
-                          Isso vai levar só um instante.
-                          Segure a ansiedade, ele já já estará pronto para ser compartilhado!</DialogDescription>
-                      </DialogHeader>
+                    <DialogHeader>
+                      <DialogTitle className="text-xl">Seu Quizinho está quase pronto!</DialogTitle>
+                      <DialogDescription className="text-muted-foreground text-base text-pretty text-justify lg:text-left">Estamos gerando o seu Quizinho cheio de amor e diversão.
+                        Isso vai levar só um instante.
+                        Segure a ansiedade, ele já já estará pronto para ser compartilhado!</DialogDescription>
+                    </DialogHeader>
 
-                      <Loader className={"self-center"} />
-                    </div>
-                  )}
+                    <Loader className={"self-center"} />
+                  </div>
+                )}
 
-                  {!loading && qrCodeURL && (
-                    <>
-                      <DialogHeader>
-                        <DialogTitle className="text-lg">Seu Quizinho está pronto!</DialogTitle>
-                        <DialogDescription className="text-muted-foreground text-base text-justify text-pretty lg:text-left">
-                          Agora é só compartilhar com quem você ama!
-                          Use o QR code abaixo para enviar seu Quizinho e descobrir o quanto ele(a) te conhece.
-                        </DialogDescription>
-                      </DialogHeader>
+                {!loading && qrCodeURL && (
+                  <>
+                    <DialogHeader>
+                      <DialogTitle className="text-lg">Seu Quizinho está pronto!</DialogTitle>
+                      <DialogDescription className="text-muted-foreground text-base text-justify text-pretty lg:text-left">
+                        Agora é só compartilhar com quem você ama!
+                        Use o QR code abaixo para enviar seu Quizinho e descobrir o quanto ele(a) te conhece.
+                      </DialogDescription>
+                    </DialogHeader>
 
-                      <div className="w-full h-fit flex flex-col items-center gap-5 justify-center">
-                        <div className="w-fit h-fit bg-foreground rounded-lg">
-                          <qr-code
-                            contents={'qrCodeURL'}
-                            module-color="#3dccc7"
-                            position-ring-color="#cfbaf0"
-                            position-center-color="#3dccc7"
-                            mask-x-to-y-ratio="1.2"
-                          // onCodeRendered={console.log('teste')}
-                          >
-                            <img alt="" src="./quizinho-light-purple.svg" slot="icon" />
-                          </qr-code>
-                        </div>
+                    <div className="w-full h-fit flex flex-col items-center gap-5 justify-center">
+                      <div className="w-fit h-fit bg-foreground rounded-lg">
+                        <qr-code
+                          contents={'qrCodeURL'}
+                          module-color="#3dccc7"
+                          position-ring-color="#cfbaf0"
+                          position-center-color="#3dccc7"
+                          mask-x-to-y-ratio="1.2"
+                        // onCodeRendered={console.log('teste')}
+                        >
+                          <img alt="" src="./quizinho-light-purple.svg" slot="icon" />
+                        </qr-code>
+                      </div>
 
-                        {/* <QRCodeSVG
+                      {/* <QRCodeSVG
                           value={'te amo mto momo'}
                           // title={"Title for my QR Code"}
                           size={256}
@@ -596,19 +586,16 @@ export default function Home() {
                           }}
                         /> */}
 
-                        <a href={qrCodeURL} target="_black">
-                          <span>{qrCodeURL}</span>
-                        </a>
+                      <a href={qrCodeURL} target="_black">
+                        <span>{qrCodeURL}</span>
+                      </a>
 
+                      <div className="flex gap-2">
+                        <WhatsappShareButton windowPosition="windowCenter" title="Quizinho - Crie um quiz para seu amorzinho" separator="" url={'https://trembalajobs.com/elojob'}>
+                          <WhatsappIcon round size={32} />
+                        </WhatsappShareButton>
 
-                        {/* <Button onClick={}>qrCodeSVGToBase64</Button> */}
-
-                        <div className="flex gap-2">
-                          <WhatsappShareButton windowPosition="windowCenter" title="Quizinho - Crie um quiz para seu amorzinho" separator="" url={'https://trembalajobs.com/elojob'}>
-                            <WhatsappIcon round size={32} />
-                          </WhatsappShareButton>
-
-                          {/* <TwitterShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
+                        {/* <TwitterShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
                           <XIcon round size={32} />
                         </TwitterShareButton>
 
@@ -623,25 +610,24 @@ export default function Home() {
                         <LinkedinShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
                           <LinkedinIcon round size={32} />
                         </LinkedinShareButton> */}
-                        </div>
-
                       </div>
-                    </>
-                  )}
 
-                </DialogContent>
-              </Dialog>
-            )}
+                    </div>
+                  </>
+                )}
+
+              </DialogContent>
+            </Dialog>
+
           </div>
 
-
-          {/* Aparentemente pronto para o mobile */}
           <div className="w-full max-h-max rounded-xl flex items-center justify-center bg-background relative lg:aspect-video">
             <div className="flex flex-col py-10 gap-2 lg:py-0  lg:gap-5 items-center w-full">
               <h4 className="text-lg lg:text-3xl font-medium">Crie sua {questions.length === 0 && (<>primeira</>)} pergunta...</h4>
 
-              <div className="flex items-center px-2 py-1 border border-muted-foreground rounded-full w-[75%] lg:w-[35%] focus-within:w-[80%] lg:focus-within:w-[40%] focus-within:border-primary transition-all">
+              <div className="flex items-center px-2 py-1 border border-muted-foreground rounded-full w-[75%] lg:w-[55%] focus-within:w-[80%] lg:focus-within:w-[60%] focus-within:border-primary transition-all">
                 <Input type="text" className="border-none focus-visible:ring-0 text-lg"
+                  placeholder="Sua pergunta"
                   value={question}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const hasValue = e.currentTarget.value.length > 0;
@@ -653,18 +639,13 @@ export default function Home() {
                 <ArrowRightCircle size={32} className="text-muted-foreground hidden lg:inline-block" />
               </div>
 
-              <div className="flex flex-col items-center gap-2 text-center w-fit">
+              <div className="flex flex-col items-start gap-5 text-center w-[75%] lg:w-[55%]">
                 {inputHasValue && (
                   <>
-                    <div className="w-full h-8 flex justify-between items-center">
-                      <span className="font-medium text-base">Alternativas</span>
-
-                      <span className="font-medium text-base">Correta</span>
-                    </div>
-
-                    <ul className="w-full flex flex-col gap-2">
+                    <ul className="w-full grid grid-cols-2 gap-2">
                       {Array.from({ length: questionsAmount }).map((_, index) => (
-                        <li key={index} className="flex gap-2 lg:gap-5 items-center w-full">
+                        <li key={index} className="flex flex-col items-start w-full">
+                          <Label htmlFor={alternatives[index] || ''} className="cursor-pointer font-medium text-sm">{`Alternativa ${index + 1}`}</Label>
                           <Input type="text"
                             className="focus-visible:ring-primary focus-visible:border-none border-muted-foreground"
                             placeholder="Sua alternativa"
@@ -675,24 +656,32 @@ export default function Home() {
                               setAlternatives(newAlternatives);
                             }}
                           />
-
-                          <Checkbox className="border-muted-foreground size-9 justify-self-center focus-visible:ring-primary focus-visible:border-none data-[state=checked]:border-none data-[state=checked]:bg-emerald-500"
-                            checked={checkboxes[index]}
-                            onCheckedChange={(e: boolean) => {
-                              const newCheckboxes = [...checkboxes]
-                              newCheckboxes[index] = Boolean(e)
-                              setCheckboxes(newCheckboxes)
-                            }}
-                          />
                         </li>
                       ))}
                     </ul>
+
+                    <div className="flex flex-col w-full items-start">
+                      <Label htmlFor='Seleciona a alternativa Correta' className="cursor-pointer font-medium text-sm">Selecione a alternativa correta</Label>
+
+                      <Select value={correctAlternative} onValueChange={(alternative) => setCorrectAlternative(alternative)}>
+                        <SelectTrigger className="focus-visible:ring-primary focus-visible:border-none border-muted-foreground">
+                          <SelectValue placeholder="Selecione a alternativa correta" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          {alternatives.map((alt, index) => (
+                            <SelectItem key={index} value={alt}>{alt}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                    </div>
                   </>
                 )}
               </div>
 
               <Button className="w-[90%] lg:w-[25%] lg:hover:w-[30%] rounded-md focus-visible:ring-muted-foreground lg:focus-visible:w-[30%] transition-all"
-                onClick={handleQuestionCreate}
+                onClick={handleQuestionCreate} disabled={!question || alternatives.length < 2 ? true : false}
               >
                 Criar Pergunta
               </Button>

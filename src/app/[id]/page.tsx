@@ -14,8 +14,8 @@ import QuizComponent from "./quizComponent";
 //     alternatives: Alternative[];
 // }
 
-const serverURL = 'https://quizinho-server.onrender.com';
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://quizinho-server.onrender.com';
+const serverURL = 'http://localhost:3001'
 
 async function fetchQuizData(id: string) {
     const { quizinho, img } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data;
@@ -40,9 +40,7 @@ const QuizPage = async ({ params }: { params: { id: string } }) => {
     const quizData = await fetchQuizData(params.id);
 
     return (
-        <div className="w-full h-screen flex flex-col items-center justify-center gap-2">
-            <QuizComponent quizinho={quizData.quizinho} />
-        </div>
+        <QuizComponent quizinho={quizData.quizinho} />
     );
 };
 
