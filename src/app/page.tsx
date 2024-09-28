@@ -20,7 +20,7 @@ import * as qr from '@bitjson/qr-code'
 import useWindowSize from 'react-use/lib/useWindowSize'
 import SizedConfetti from 'react-confetti'
 import { format } from 'date-fns'
-import { motion } from "framer-motion"
+import { delay, motion } from "framer-motion"
 // import { QRCodeSVG } from 'qrcode.react';
 
 // import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton,  TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share'
@@ -190,6 +190,42 @@ export default function Home() {
     }
   }, []);
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.5,
+      }
+    }
+  }
+
+  const item1 = {
+    hidden: {
+      opacity: 0,
+      x: 0,
+      y: 0,
+    },
+    show: {
+      opacity: 1,
+      x: "1.25rem",
+      y: "1.25rem",
+    }
+  }
+
+  const item2 = {
+    hidden: {
+      opacity: 0,
+      x: "1.25rem",
+      y: "1.25rem"
+    },
+    show: {
+      opacity: 1,
+      x: "2.5rem",
+      y: "2.5rem",
+    }
+  }
+
   return (
     <main className="flex flex-col gap-8 lg:gap-24 w-full">
       <nav className="flex justify-between items-center sticky top-0 py-2 bg-[#cfbaf0] backdrop-blur px-4 sm:px-12 lg:px-32 2xl:px-64 z-20 shadow-lg">
@@ -229,10 +265,18 @@ export default function Home() {
 
         <div className="w-[75%] lg:w-[50%] max-h-max aspect-video border rounded-lg lg:rounded-2xl relative flex flex-col">
 
-          <motion.div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute w-full h-full bg-primary -z-10 rounded-lg lg:rounded-2xl 
-            translate-x-1.5 translate-y-1.5 lg:translate-x-5 lg:translate-y-5">
-            </div>
+          <motion.div className="absolute top-0 left-0 w-full h-full"
+            variants={container}
+            initial="hidden"
+            animate="show"
+          >
+            <motion.div className="absolute w-full h-full bg-primary -z-10 rounded-lg lg:rounded-2xl"
+              variants={item1}>
+            </motion.div>
+
+            <motion.div className="absolute w-full h-full bg-violet-500 -z-20 rounded-lg lg:rounded-2xl"
+              variants={item2}>
+            </motion.div>
           </motion.div>
           {/* fazer animaçãozinha da "sombra". Adicionar outra com a cor [#cfbaf0] mais deslocada */}
 
@@ -252,7 +296,7 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="w-full h-12 bg-ne utral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
+          <div className="w-full h-12 bg-neutral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
 
             <div className="size-5">
               <img src="./quizinho-light-purple.svg" alt="quizinho logo" />
@@ -267,7 +311,7 @@ export default function Home() {
 
           {/* <iframe src="https://quizinho.me/JArEt" className="w-full h-full rounded-b-2xl relative"></iframe> */}
 
-          <div className="w-full h-full rounded-b-lg lg:rounded-b-2xl relative bg-wh ite"></div>
+          <div className="w-full h-full rounded-b-lg lg:rounded-b-2xl relative bg-white"></div>
 
         </div>
       </div>
