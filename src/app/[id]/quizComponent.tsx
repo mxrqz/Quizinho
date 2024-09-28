@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import LogoSvg from "@/components/svg";
-// import { MoonStar, Sun } from "lucide-react";
+import { MoonStar, Sun } from "lucide-react";
 
 interface Alternative {
     alternative: string;
@@ -22,6 +22,7 @@ const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
     const [selectedAlternative, setSelectedAlternative] = React.useState<string | null>(null);
     const [score, setScore] = React.useState(0);
     const [isQuizCompleted, setIsQuizCompleted] = React.useState(false);
+    const [darkMode, setDarkMode] = React.useState<boolean>(false)
 
     const currentQuestion = quizinho[currentQuestionIndex];
 
@@ -52,6 +53,28 @@ const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
         }
     };
 
+    const setMode = (mode: "light" | "dark") => {
+        localStorage.theme = mode
+
+        if (mode === 'dark') {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+
+        setDarkMode(!darkMode)
+    }
+
+    React.useEffect(() => {
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+            setDarkMode(true)
+        } else {
+            document.documentElement.classList.remove('dark')
+            setDarkMode(false)
+        }
+    }, [])
+
     return (
         <>
             <nav className="flex justify-between items-center absolute w-full top-0 py-2 bg-[#cfbaf0] backdrop-blur px-32 2xl:px-64">
@@ -61,6 +84,14 @@ const QuizComponent = ({ quizinho }: { quizinho: Question[] }) => {
                         <h1 className="text-3xl font-semibold text-white">Quizinho</h1>
                     </div>
                 </a>
+
+                <div>
+                    {darkMode ? (
+                        <MoonStar color="white" cursor={'pointer'} onClick={() => setMode('light')} />
+                    ) : (
+                        <Sun color="white" cursor={'pointer'} onClick={() => setMode('dark')} />
+                    )}
+                </div>
             </nav>
 
             {!isQuizCompleted ? (

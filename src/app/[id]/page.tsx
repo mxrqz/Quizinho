@@ -14,41 +14,35 @@ import QuizComponent from "./quizComponent";
 //     alternatives: Alternative[];
 // }
 
-const serverURL = 'https://quizinho-server.onrender.com';
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://quizinho-server.onrender.com';
+const serverURL = 'http://localhost:3001'
 
 
-async function fetchQuizData(id: string, type: string) {
-    const { quizinho, qrCode } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data;
-
-    if (type === 'quizinho') {
-        return quizinho
-    } else if (type === 'qrCode') {
-        return qrCode
-    }
-
-    return quizinho
+async function fetchQuizData(id: string) {
+    const { quizinho, img } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data;
+    return { quizinho, img };
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-    const qrCode = await fetchQuizData(params.id, "qrCode")
+    const quizData = await fetchQuizData(params.id)
+
     return {
-        title: `Quiz ${qrCode}`,
-        description: `Participa do quiz ${qrCode}`,
+        title: "Teste seu amor com meu Quizinho!",
+        description: "Clique para descobrir o quanto você me conhece! Vamos ver quantas você acerta!",
         openGraph: {
-            title: `Teste ${qrCode}`,
-            description: `Participe do quiz ${qrCode}`,
-            images: qrCode,
+            title: "Teste seu amor com meu Quizinho!",
+            description: "Clique para descobrir o quanto você me conhece! Vamos ver quantas você acerta!",
+            images: quizData.img,
         },
     };
 }
 
 const QuizPage = async ({ params }: { params: { id: string } }) => {
-    const quizinho = (await fetchQuizData(params.id, "quizinho")).quizinho;
+    const quizData = await fetchQuizData(params.id);
 
     return (
         <div className="w-full h-screen flex flex-col items-center justify-center gap-2">
-            <QuizComponent quizinho={quizinho} />
+            <QuizComponent quizinho={quizData.quizinho} />
         </div>
     );
 };

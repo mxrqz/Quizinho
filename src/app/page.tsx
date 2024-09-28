@@ -40,8 +40,8 @@ interface Questions {
   alternatives: alternatives[]
 }
 
-const serverURL = 'https://quizinho-server.onrender.com'
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://quizinho-server.onrender.com'
+const serverURL = 'http://localhost:3001'
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState<boolean>(false)
@@ -179,10 +179,7 @@ export default function Home() {
         const pngDataUrl = await toPng(wrapper, { quality: 1 });
 
         await axios.post(`${serverURL}/qr-code`, { pngDataUrl, qrCodeURL })
-        // const link = document.createElement('a');
-        // link.href = pngDataUrl;
-        // link.download = 'qr-code.png';
-        // link.click();
+
       } catch (error) {
         console.error('Erro ao converter QR Code para PNG:', error);
       }
@@ -191,7 +188,6 @@ export default function Home() {
     const qrCodeElement = document.querySelector('qr-code');
     if (qrCodeElement) {
       qrCodeElement.addEventListener('codeRendered', () => {
-        // qrCodeSVGToBase64()
         qrCodeToPNG()
       });
     }
