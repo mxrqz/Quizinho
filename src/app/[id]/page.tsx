@@ -1,26 +1,20 @@
-// src/app/teste/[id]/page.tsx
-import React from 'react'
+import React, { cache } from 'react'
 import { Metadata } from 'next';
 import axios from 'axios';
 import QuizComponent from "./quizComponent";
 
-// interface Alternative {
-//     alternative: string;
-//     correct: boolean;
-// }
-
-// interface Question {
-//     question: string;
-//     alternatives: Alternative[];
-// }
-
 const serverURL = 'https://quizinho-server.onrender.com';
 // const serverURL = 'http://localhost:3001'
 
-async function fetchQuizData(id: string) {
-    const { quizinho, img } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data;
-    return { quizinho, img };
-}
+// async function fetchQuizData(id: string) {
+//     const { quizinho, img } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data;
+//     return { quizinho, img };
+// }
+
+const fetchQuizData = cache(async (id: string) => {
+    const {quizinho, img} = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data
+    return {quizinho, img}
+})
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
     const quizData = await fetchQuizData(params.id)

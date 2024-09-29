@@ -221,11 +221,13 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-col gap-8 lg:gap-24 max-w-full">
-      <ShootingStars  />
-      <StarsBackground starDensity={0.00025} allStarsTwinkle={false} twinkleProbability={0.4} />
+    <main className="flex flex-col gap-16 lg:gap-24 max-w-full overflow-hidden">
+      <div className="absolute w-full h-full invert dark:invert-0">
+        <ShootingStars />
+        <StarsBackground starDensity={0.00025} allStarsTwinkle={false} twinkleProbability={0.4} />
+      </div>
 
-      <nav className="flex justify-between items-center lg:items-end sticky left-0 w-full h-12 lg:h-24 top-0 py-2 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64 transition-all backdrop-blur-sm z-10">
+      <nav className="flex justify-between items-center lg:items-end sticky left-0 w-full h-12 lg:h-24 top-0 pt-12 lg:pt-0 py-2 px-4 sm:px-12 lg:px-32 2xl:px-64 transition-all backdrop-blur-sm z-10">
         <a href="/">
           <div className="flex gap-5 items-center">
             <LogoSvg size={36} className="fill-foreground transition-all" />
@@ -242,54 +244,58 @@ export default function Home() {
         </div>
       </nav>
 
-      <div className="flex flex-col items-center justify-between gap-5 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64">
-        <div className="w-full lg:w-[35%] flex flex-col gap-10 justify-center text-pretty">
+      <div className="flex flex-col items-center justify-between gap-16 lg:gap-5 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64">
+        <div className="w-full lg:w-[35%] flex flex-col gap-10 items-center lg:items-start justify-center text-pretty">
 
           <div className="absolute top-10 -left-10 lg:left-36 w-fit flex items-center blur-2xl opacity-100 dark:opacity-10">
             <img src="./blob_gradient.png" alt="blob" />
           </div>
 
-          <div className="relative flex flex-col gap-2">
-            <h2 className="text-5xl font-semibold">Descubra se seu amor te conhece de <span className="inline-block bg-primary text-primary-foreground w-fit rounded-md px-4 py-1">verdade!</span></h2>
-            <p className="text-xl font-medium">Crie um quiz personalizado e divertido para o seu namorado(a) e compartilhe através de um QR code único!</p>
+          <div className="relative flex flex-col gap-2 text-center lg:text-start">
+            <h2 className="text-3xl lg:text-5xl font-semibold">Descubra se seu amor te conhece de <span className="inline-block bg-primary text-primary-foreground w-fit rounded-md px-4 py-1">verdade!</span></h2>
+            <p className="text-lg lg:text-xl font-medium text-pretty">Crie um quiz personalizado e divertido para o seu namorado(a) e compartilhe através de um QR code único!</p>
           </div>
 
-          <Button variant={'ghost'} className="relative px-0 w-fit text-lg flex gap-2 hover:bg-transparent hover:text-primary transition-colors group hover:underline">
-            Crie seu Quizinho
-            <ArrowRight className="group-hover:translate-x-1.5 transition-transform" />
-          </Button>
+          <a href="#quizinho">
+            <Button variant={'ghost'} className="relative px-0 w-fit text-lg flex gap-2 hover:bg-transparent hover:text-primary transition-colors group hover:underline">
+              Crie seu Quizinho
+              <ArrowRight className="group-hover:translate-x-1.5 transition-transform" />
+            </Button>
+          </a>
         </div>
 
-        <div className="w-[75%] lg:w-[50%] max-h-max aspect-video border rounded-lg lg:rounded-2xl relative flex flex-col">
+        <div className="w-full lg:w-[50%] max-h-max aspect-video border rounded-lg lg:rounded-2xl relative flex flex-col">
 
-          <motion.div className="absolute top-0 left-0 w-full h-full"
-            variants={container}
-            initial="hidden"
-            animate="show"
-          >
-            <motion.div className="absolute w-full h-full bg-primary -z-10 rounded-lg lg:rounded-2xl"
-              variants={item1}>
+          <div className="absolute w-full h-full top-0 left-0">
+            <motion.div className="hidden absolute lg:inline-block top-0 left-0 w-full h-full"
+              variants={container}
+              initial="hidden"
+              animate="show"
+            >
+              <motion.div className="absolute w-full h-full bg-primary -z-10 rounded-lg lg:rounded-2xl"
+                variants={item1}>
+              </motion.div>
+
+              <motion.div className="absolute w-full h-full bg-violet-500 -z-20 rounded-lg lg:rounded-2xl"
+                variants={item2}>
+              </motion.div>
             </motion.div>
 
-            <motion.div className="absolute w-full h-full bg-violet-500 -z-20 rounded-lg lg:rounded-2xl"
-              variants={item2}>
-            </motion.div>
-          </motion.div>
+            <div className="w-2/4 h-2/4 absolute top-0 -translate-y-1/3 left-0 -translate-x-1/3 flex items-center overflow-hidden -z-20">
+              <ul className="w-full aspect-square grid grid-cols-6 grid-rows-6 absolute scale-125 maskImage">
+                {Array.from({ length: 36 }).map((_, index) => (
+                  <li key={index} className="border-b border-r border-primary"></li>
+                ))}
+              </ul>
+            </div>
 
-          <div className="w-2/4 h-2/4 absolute top-0 -translate-y-1/3 left-0 -translate-x-1/3 flex items-center overflow-hidden -z-20">
-            <ul className="w-full aspect-square grid grid-cols-6 grid-rows-6 absolute scale-125 maskImage">
-              {Array.from({ length: 36 }).map((_, index) => (
-                <li key={index} className="border-b border-r border-primary"></li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="w-1/3 h-1/3 absolute bottom-0 translate-y-1/2 right-0 translate-x-1/2 -z-20">
-            <ul className="grid grid-cols-9 grid-rows-9 place-items-center w-full h-full maskImage2">
-              {Array.from({ length: (9 * 9) }).map((_, index) => (
-                <li key={index} className="size-1 bg-primary rounded-full"></li>
-              ))}
-            </ul>
+            <div className="w-1/3 h-1/3 absolute bottom-0 translate-y-1/2 right-0 translate-x-1/2 -z-20">
+              <ul className="grid grid-cols-9 grid-rows-9 place-items-center w-full h-full maskImage2">
+                {Array.from({ length: (9 * 9) }).map((_, index) => (
+                  <li key={index} className="size-1 bg-primary rounded-full"></li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           <div className="w-full h-12 bg-neutral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
@@ -312,9 +318,9 @@ export default function Home() {
         </div>
       </div>
 
-      <Separator className="bg-muted-foreground" />
+      <Separator className="bg-muted-foreground hidden lg:inline-block" />
 
-      <div className="flex w-full px-4 sm:px-12 lg:px-32 2xl:px-64">
+      <div id="quizinho" className="flex w-full px-4 sm:px-12 lg:px-32 2xl:px-64">
 
         <div className="w-full overflow-hidden border rounded-lg lg:rounded-3xl p-5 flex flex-col-reverse lg:flex-row gap-5 bg-[#cfbaf0]">
 
@@ -419,45 +425,52 @@ export default function Home() {
                                   ))}
                                 </div>
 
-                                <Button variant={"outline"} className="border-muted-foreground hover:bg-primary hover:border-none focus-visible:ring-primary focus-visible:border-none hover:text-white focus-visible:bg-primary focus-visible:text-white col-span-4 lg:col-start-2 lg:col-span-3"
-                                  onClick={() => {
-                                    const newAlternative = '';
-                                    const updatedAlternatives = [...(editingQuestion?.alternatives || []), newAlternative];
+                                {editingQuestion?.alternatives && editingQuestion?.alternatives.length < 4 && (
+                                  <Button variant={"outline"} className="border-muted-foreground hover:bg-primary hover:border-none focus-visible:ring-primary focus-visible:border-none hover:text-white focus-visible:bg-primary focus-visible:text-white col-span-4 lg:col-start-2 lg:col-span-3"
+                                    onClick={() => {
+                                      const newAlternative = '';
+                                      const updatedAlternatives = [...(editingQuestion?.alternatives || []), newAlternative];
 
-                                    if (editingQuestion) {
-                                      setEditingQuestion({
-                                        ...editingQuestion,
-                                        alternatives: updatedAlternatives
-                                      });
-                                    }
-                                  }}
-                                >
-                                  <Plus />
-                                </Button>
-
-                                <Select value={editingQuestion?.correctAlternative || ''}
-                                  onValueChange={(alternative) => {
-                                    setEditingQuestion(prevQ => {
-                                      if (prevQ) {
-                                        return {
-                                          ...prevQ,
-                                          correctAlternative: alternative,
-                                        };
+                                      if (editingQuestion) {
+                                        setEditingQuestion({
+                                          ...editingQuestion,
+                                          alternatives: updatedAlternatives
+                                        });
                                       }
-                                      return prevQ;
-                                    });
-                                  }}
-                                >
-                                  <SelectTrigger className="focus-visible:ring-primary focus-visible:border-none border-muted-foreground">
-                                    <SelectValue placeholder="Selecione a alternativa correta" />
-                                  </SelectTrigger>
+                                    }}
+                                  >
+                                    <Plus />
+                                  </Button>
+                                )}
 
-                                  <SelectContent>
-                                    {editingQuestion?.alternatives.map((alt, index) => (
-                                      alt.length > 0 ? <SelectItem key={index} value={alt || ''}>{alt || ''}</SelectItem> : ''
-                                    ))}
-                                  </SelectContent>
-                                </Select>
+                                <div>
+                                  <Label htmlFor='Seleciona a alternativa Correta' className="text-start lg:text-right text-nowrap py-0 space-y-0">Selecione a alternativa correta</Label>
+
+                                  <Select value={editingQuestion?.correctAlternative || ''}
+                                    onValueChange={(alternative) => {
+                                      setEditingQuestion(prevQ => {
+                                        if (prevQ) {
+                                          return {
+                                            ...prevQ,
+                                            correctAlternative: alternative,
+                                          };
+                                        }
+                                        return prevQ;
+                                      });
+                                    }}
+                                  >
+                                    <SelectTrigger className="focus-visible:ring-primary focus-visible:border-none border-muted-foreground">
+                                      <SelectValue placeholder="Selecione a alternativa correta" />
+                                    </SelectTrigger>
+
+                                    <SelectContent>
+                                      {editingQuestion?.alternatives.map((alt, index) => (
+                                        alt.length > 0 ? <SelectItem key={index} value={alt || ''}>{alt || ''}</SelectItem> : ''
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+
                               </div>
 
                               <DialogFooter className="flex flex-row justify-end gap-2">
@@ -557,13 +570,13 @@ export default function Home() {
                       <div className="w-fit h-fit bg-foreground rounded-lg">
                         <qr-code
                           contents={'qrCodeURL'}
-                          module-color="#3dccc7"
-                          position-ring-color="#cfbaf0"
-                          position-center-color="#3dccc7"
-                          mask-x-to-y-ratio="1.2"
-                        // onCodeRendered={console.log('teste')}
+                          // module-color="#3dccc7"
+                          // position-ring-color="#cfbaf0"
+                          // position-center-color="#3dccc7"
+                          // mask-x-to-y-ratio="1.2"
+                          squares
                         >
-                          <img alt="" src="./quizinho-light-purple.svg" slot="icon" />
+                          {/* <img alt="" src="./quizinho-light-purple.svg" slot="icon" /> */}
                         </qr-code>
                       </div>
 
