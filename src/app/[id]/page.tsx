@@ -3,8 +3,8 @@ import { Metadata } from 'next';
 import axios from 'axios';
 import QuizComponent from "./quizComponent";
 
-const serverURL = 'https://quizinho-server.onrender.com';
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://api.quizinho.me';
+const serverURL = 'http://localhost:3001'
 
 const fetchQuizData = cache(async (id: string) => {
     const {quizinho, img} = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data

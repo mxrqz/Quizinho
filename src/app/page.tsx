@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowRightCircle, Check, CircleUserRound, Crown, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X } from "lucide-react";
 
@@ -9,26 +9,27 @@ import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Checkbox } from "@/components/ui/checkbox"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog"
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import Loader from "@/components/ui/loading";
-import axios from 'axios'
-import { toPng } from 'html-to-image'
-import * as qr from '@bitjson/qr-code'
-import useWindowSize from 'react-use/lib/useWindowSize'
-import SizedConfetti from 'react-confetti'
-import { format } from 'date-fns'
-import { motion } from "framer-motion"
-// import { QRCodeSVG } from 'qrcode.react';
+import axios from 'axios';
+import { toPng } from 'html-to-image';
+import * as qr from '@bitjson/qr-code';
+import useWindowSize from 'react-use/lib/useWindowSize';
+import SizedConfetti from 'react-confetti';
+import { format } from 'date-fns';
+import { motion } from "framer-motion";
 
-// import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton,  TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share'
-import { WhatsappIcon, WhatsappShareButton } from 'react-share'
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+
+import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton, TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StarsBackground } from "@/components/ui/stars-background";
 import { ShootingStars } from "@/components/ui/shooting-stars";
-import { CardSpotlight } from "@/components/ui/card-spotlight";
 
 interface Questions {
   question: string,
@@ -38,8 +39,9 @@ interface Questions {
 
 const questionsAmount = 4
 
-const serverURL = 'https://quizinho-server.onrender.com'
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://api.quizinho.me'
+const serverURL = 'http://localhost:3001'
+const quizinhoURL = 'quizinho.me/'
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState<boolean>(false)
@@ -50,8 +52,18 @@ export default function Home() {
   const [question, setQuestion] = useState<string>('')
   const [alternatives, setAlternatives] = useState<string[]>([])
   const [correctAlternative, setCorrectAlternative] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
-  const [qrCodeURL, setQrCodeURL] = useState<string>('')
+  const [selectedPlan, setSelectedPlan] = useState<"free" | "premium" | undefined>(undefined)
+  const [customURL, setCustomURL] = useState<string>('')
+
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const getLoading = searchParams.get('loading') || 'false'
+  const loading = getLoading === "true" ? true : false
+  const qrCodeURL = searchParams.get('qrCodeURL') || ''
+  const getModal = searchParams.get('modal') || 'false'
+  const modalOpen = getModal === 'true' ? true : false
 
   const setMode = (mode: "light" | "dark") => {
     localStorage.theme = mode
@@ -103,16 +115,68 @@ export default function Home() {
   };
 
   const handleCreateQuizinho = async () => {
-    setLoading(true)
-    const url = await (await axios.post(`${serverURL}/create-quizinho`, questions)).data
-    setQrCodeURL(url)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const loading = router.push(pathname + '?' + createQueryString('loading', 'true'), { scroll: false })
 
-    setTimeout(() => {
-      setLoading(false)
-    }, 1500);
+    const quizinhoData = selectedPlan === "premium" ? { questions: questions, customURL: customURL } : { questions }
+
+    const data = await (await axios.post(`${serverURL}/create-quizinho`, quizinhoData)).data
+
+    if (data.url) {
+      window.location.href = data.url
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const qrCodeURL = router.push(pathname + '?' + createQueryString('qrCodeURL', data) + '&' + createQueryString('loading', 'false'), { scroll: false })
+    }
   }
 
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set(name, value)
+
+      return params.toString()
+    },
+    [searchParams]
+  )
+
   const { width, height } = useWindowSize()
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.5,
+      }
+    }
+  }
+
+  const item1 = {
+    hidden: {
+      opacity: 0,
+      x: 0,
+      y: 0,
+    },
+    show: {
+      opacity: 1,
+      x: "1.25rem",
+      y: "1.25rem",
+    }
+  }
+
+  const item2 = {
+    hidden: {
+      opacity: 0,
+      x: "1.25rem",
+      y: "1.25rem"
+    },
+    show: {
+      opacity: 1,
+      x: "2.5rem",
+      y: "2.5rem",
+    }
+  }
 
   useEffect(() => {
     const qrCodeToPNG = async () => {
@@ -185,45 +249,9 @@ export default function Home() {
     }
   }, []);
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.5,
-      }
-    }
-  }
-
-  const item1 = {
-    hidden: {
-      opacity: 0,
-      x: 0,
-      y: 0,
-    },
-    show: {
-      opacity: 1,
-      x: "1.25rem",
-      y: "1.25rem",
-    }
-  }
-
-  const item2 = {
-    hidden: {
-      opacity: 0,
-      x: "1.25rem",
-      y: "1.25rem"
-    },
-    show: {
-      opacity: 1,
-      x: "2.5rem",
-      y: "2.5rem",
-    }
-  }
-
   return (
-    <main className="flex flex-col gap-16 lg:gap-24 max-w-full overflow-hidden">
-      <div className="absolute w-full h-full invert dark:invert-0">
+    <main className="flex flex-col gap-16 lg:gap-24 max-w-full h-full overflow-hidden relative">
+      <div className="absolute top-0 left-0 w-full h-full invert dark:invert-0">
         <ShootingStars />
         <StarsBackground starDensity={0.00025} allStarsTwinkle={false} twinkleProbability={0.4} />
       </div>
@@ -245,10 +273,10 @@ export default function Home() {
         </div>
       </nav>
 
-      <div className="flex flex-col items-center justify-between gap-16 lg:gap-5 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64">
+      <div className="relative flex flex-col items-center justify-between gap-16 lg:gap-5 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64">
         <div className="w-full lg:w-[35%] flex flex-col gap-10 items-center lg:items-start justify-center text-pretty">
 
-          <div className="absolute top-10 -left-10 lg:left-36 w-fit flex items-center blur-2xl opacity-100 dark:opacity-10">
+          <div className="absolute -top-10 left-0 lg:left-36 w-fit flex items-center blur-2xl opacity-100 dark:opacity-10 rotate-180">
             <img src="./blob_gradient.png" alt="blob" />
           </div>
 
@@ -312,8 +340,6 @@ export default function Home() {
             </ul>
           </div>
 
-          {/* <iframe src="https://quizinho.me/JArEt" className="w-full h-full rounded-b-2xl relative"></iframe> */}
-
           <div className="w-full h-full rounded-b-lg lg:rounded-b-2xl relative bg-white"></div>
 
         </div>
@@ -321,8 +347,7 @@ export default function Home() {
 
       <Separator className="bg-muted-foreground hidden lg:inline-block" />
 
-      <div id="quizinho" className="flex w-full px-4 sm:px-12 lg:px-32 2xl:px-64">
-
+      <div id="quizinho" className="relative flex w-full px-4 sm:px-12 lg:px-32 2xl:px-64">
         <div className="w-full overflow-hidden border rounded-lg lg:rounded-3xl p-5 flex flex-col-reverse lg:flex-row gap-5 bg-violet-500">
 
           <div className="flex flex-col shrink-0 gap-5 w-full lg:w-[25%] text-white">
@@ -516,9 +541,15 @@ export default function Home() {
               )}
             </ScrollArea>
 
-            <Dialog>
+            <Dialog defaultOpen={modalOpen}>
               <DialogTrigger asChild>
-                <Button disabled={questions.length < 2} className="bg-foreground text-background">Criar Quizinho</Button>
+                <Button
+                  className="bg-foreground text-background"
+                  disabled={questions.length < 2}
+                  onClick={() => router.push(pathname + '?' + createQueryString('modalOpen', 'true'), { scroll: false })}
+                >
+                  Criar Quizinho
+                </Button>
               </DialogTrigger>
 
               <DialogContent className="h-fit w-[80%] lg:w-fit rounded-md transition-all">
@@ -532,15 +563,21 @@ export default function Home() {
                     </DialogHeader>
 
                     <div className="grid lg:grid-cols-2 gap-2">
-                      <CardSpotlight className="rounded-lg p-5 flex flex-col gap-3 bg-foreground/10 cursor-pointer overflow-hidden">
-                        <div className="absolute lg:hidden w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
+                      <div className={`rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "free" && "bg-foreground/10 border-white"}`}
+                        onClick={() => setSelectedPlan("free")}
+                      >
+                        <div className="absolute w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
 
-                        <div className="w-full flex gap-2 py-2 relative z-10">
-                          <CircleUserRound />
-                          <span className="font-semibold text-foreground">Grátis</span>
+                        <div className="w-full flex flex-col gap-2 py-2 relative z-10">
+                          <div className="flex gap-2">
+                            <CircleUserRound />
+                            <span className="font-semibold text-foreground">Grátis</span>
+                          </div>
+
+                          <span className="text-xl font-semibold text-foreground">R$0</span>
                         </div>
 
-                        <Button className="bg-violet-500 relative z-10">Selecionar</Button>
+                        <Button className="bg-violet-500 hover:bg-violet-400 relative z-10">Selecionar</Button>
 
                         <ul className="flex flex-col gap-1 relative z-10">
                           <li className="flex flex-nowrap gap-2">
@@ -563,19 +600,25 @@ export default function Home() {
                             Disponível por 1 semana
                           </li>
                         </ul>
-                      </CardSpotlight>
+                      </div>
 
-                      <CardSpotlight className="rounded-lg p-5 flex flex-col gap-3 bg-foreground/10 cursor-pointer overflow-hidden">
-                        <div className="absolute lg:hidden w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
-              
-                        <div className="w-full flex gap-2 py-2 relative z-20">
-                          <Crown className="text-yellow-500" />
-                          <span className="font-semibold text-foreground">Premium</span>
+                      <div className={`rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "premium" && "bg-foreground/10 border-white"}`}
+                        onClick={() => setSelectedPlan("premium")}
+                      >
+                        <div className="absolute w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
+
+                        <div className="w-full flex flex-col gap-2 py-2 relative z-10">
+                          <div className="flex gap-2">
+                            <Crown className="text-yellow-500" />
+                            <span className="font-semibold text-foreground">Premium</span>
+                          </div>
+
+                          <span className="text-xl font-semibold text-foreground">R$5</span>
                         </div>
 
-                        <Button className="bg-violet-500 relative z-20">Selecionar</Button>
+                        <Button className="bg-violet-500 hover:bg-violet-400 relative z-10">Selecionar</Button>
 
-                        <ul className="flex flex-col gap-1 relative z-20">
+                        <ul className="flex flex-col gap-1 relative z-10">
                           <li className="flex flex-nowrap gap-2">
                             <Check className="text-green-500" />
                             Todas funcionalidades
@@ -596,26 +639,47 @@ export default function Home() {
                             Disponível por 6 mês
                           </li>
                         </ul>
-                      </CardSpotlight>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="customUrl">Defina sua URL personalizada (Não use emojis ou caracteres especiais)</Label>
+
+                      <div className="border flex items-center px-2 gap-1 text-foreground/70 font-medium text-base rounded-md focus-within:border-violet-500">
+                        <span>{quizinhoURL}</span>
+                        <Input id="customUrl"
+                          className="border-none ring-0 focus-visible:ring-0 px-0 text-foreground font-medium text-base"
+                          disabled={selectedPlan !== 'premium'}
+                          value={customURL || ''}
+                          onChange={(e) => {
+                            const sanitizedURL = e.currentTarget.value
+                              .replace(/\s+/g, '_')
+                              .replace(/[^a-zA-Z0-9-_]/g, '');
+                            setCustomURL(sanitizedURL);
+                          }}
+                        />
+                      </div>
                     </div>
 
                     <DialogFooter className="flex flex-row justify-end gap-5 w-full">
                       <DialogClose asChild>
-                        <Button variant={"destructive"} className="w-fit">Cancelar</Button>
+                        <Button variant={"outline"} className="w-fit">Cancelar</Button>
                       </DialogClose>
-                      <Button onClick={handleCreateQuizinho} className="w-fit">Criar</Button>
+                      <Button onClick={handleCreateQuizinho} className="w-fit bg-violet-500 hover:bg-violet-400"
+                        disabled={!selectedPlan}
+                      >
+                        Criar
+                      </Button>
                     </DialogFooter>
                   </>
                 )}
 
                 {loading && !qrCodeURL && (
                   <div className="w-full flex flex-col gap-5">
-
                     <DialogHeader>
                       <DialogTitle className="text-xl">Seu Quizinho está quase pronto!</DialogTitle>
-                      <DialogDescription className="text-muted-foreground text-base text-pretty text-justify lg:text-left">Estamos gerando o seu Quizinho cheio de amor e diversão.
-                        Isso vai levar só um instante.
-                        Segure a ansiedade, ele já já estará pronto para ser compartilhado!</DialogDescription>
+                      <DialogDescription className="text-muted-foreground text-base text-pretty text-justify lg:text-left">
+                        Estamos gerando o seu Quizinho!</DialogDescription>
                     </DialogHeader>
 
                     <Loader className={"self-center"} />
@@ -633,37 +697,14 @@ export default function Home() {
                     </DialogHeader>
 
                     <div className="w-full h-fit flex flex-col items-center gap-5 justify-center">
-                      <div className="w-fit h-fit bg-foreground rounded-lg">
-                        <qr-code
-                          contents={'qrCodeURL'}
-                          // module-color="#3dccc7"
-                          // position-ring-color="#cfbaf0"
-                          // position-center-color="#3dccc7"
-                          // mask-x-to-y-ratio="1.2"
-                          squares
-                        >
-                          {/* <img alt="" src="./quizinho-light-purple.svg" slot="icon" /> */}
-                        </qr-code>
+                      <div className="size-88 bg-foreground rounded-lg overflow-hidden">
+                        <div className="translate-x-1 scale-110 ">
+                          <qr-code
+                            contents={qrCodeURL}
+                            squares
+                          />
+                        </div>
                       </div>
-
-                      {/* <QRCodeSVG
-                          value={'te amo mto momo'}
-                          // title={"Title for my QR Code"}
-                          size={256}
-                          bgColor={"transparent"}
-                          fgColor={"white"}
-                          level={"L"}
-                          marginSize={0}
-                          imageSettings={{
-                            src: "./quizinho-light-purple.svg",
-                            x: undefined,
-                            y: undefined,
-                            height: 50,
-                            width: 50,
-                            opacity: 1,
-                            excavate: true,
-                          }}
-                        /> */}
 
                       <a href={qrCodeURL} target="_black">
                         <span>{qrCodeURL}</span>
@@ -674,7 +715,7 @@ export default function Home() {
                           <WhatsappIcon round size={32} />
                         </WhatsappShareButton>
 
-                        {/* <TwitterShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
+                        <TwitterShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
                           <XIcon round size={32} />
                         </TwitterShareButton>
 
@@ -688,7 +729,7 @@ export default function Home() {
 
                         <LinkedinShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
                           <LinkedinIcon round size={32} />
-                        </LinkedinShareButton> */}
+                        </LinkedinShareButton>
                       </div>
 
                     </div>
@@ -697,7 +738,6 @@ export default function Home() {
 
               </DialogContent>
             </Dialog>
-
           </div>
 
           <div className="w-full max-h-max rounded-xl flex items-center justify-center bg-background relative lg:aspect-video">
@@ -760,14 +800,13 @@ export default function Home() {
               </div>
 
               <Button className="w-[90%] lg:w-[25%] lg:hover:w-[30%] rounded-md focus-visible:ring-muted-foreground lg:focus-visible:w-[30%] transition-all"
-                onClick={handleQuestionCreate} disabled={!question || alternatives.length < 2 ? true : false}
+                onClick={handleQuestionCreate} disabled={!question || alternatives.length < 2 || !correctAlternative ? true : false}
               >
                 Criar Pergunta
               </Button>
             </div>
           </div>
         </div>
-
       </div>
 
       {!loading && qrCodeURL && (
@@ -791,7 +830,7 @@ export default function Home() {
         />
       )}
 
-      <div className="w-full h-36 flex justify-center items-center px-4 sm:px-12 lg:px-32">
+      <div className="relative w-full h-36 flex justify-center items-center px-4 sm:px-12 lg:px-32">
         <span>© Quizinho {format(new Date, 'yyyy')}</span>
       </div>
     </main>
