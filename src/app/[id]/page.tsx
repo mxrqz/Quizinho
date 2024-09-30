@@ -1,8 +1,7 @@
-import React, { cache } from 'react'
+import { cache } from 'react';
 import { Metadata } from 'next';
 import axios from 'axios';
 import QuizComponent from "./quizComponent";
-import Head from "next/head";
 import Script from "next/script";
 
 const serverURL = 'https://api.quizinho.me';
