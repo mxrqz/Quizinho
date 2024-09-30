@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowRightCircle, Check, CircleUserRound, Crown, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X } from "lucide-react";
-
 import LogoSvg from "@/components/svg";
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -21,11 +20,7 @@ import useWindowSize from 'react-use/lib/useWindowSize';
 import SizedConfetti from 'react-confetti';
 import { format } from 'date-fns';
 import { motion } from "framer-motion";
-
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton, TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StarsBackground } from "@/components/ui/stars-background";
@@ -39,8 +34,8 @@ interface Questions {
 
 const questionsAmount = 4
 
-const serverURL = 'https://api.quizinho.me'
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://api.quizinho.me'
+const serverURL = 'http://localhost:3001'
 const quizinhoURL = 'quizinho.me/'
 
 export default function Home() {
@@ -180,40 +175,15 @@ export default function Home() {
 
   useEffect(() => {
     const qrCodeToPNG = async () => {
+      console.log('teste')
       const qrCodeElement = document.querySelector('qr-code');
       if (!qrCodeElement) return;
-      const shadowRoot = qrCodeElement.shadowRoot;
-      let svgElement
-      if (shadowRoot) {
-        svgElement = shadowRoot.querySelector('svg');
-      };
-      const imgElement = qrCodeElement.querySelector('img')
-      if (!imgElement || !svgElement) return;
-
-      const wrapper = document.createElement('div');
-      wrapper.style.position = 'relative';
-      wrapper.style.display = 'inline-block';
-
-      document.body.appendChild(wrapper);
-
-      const clonedSvg = svgElement.cloneNode(true) as SVGElement;
-      clonedSvg.style.position = 'relative';
-
-      wrapper.appendChild(clonedSvg);
-
-      const clonedImg = imgElement.cloneNode(true) as HTMLImageElement;
-      clonedImg.style.position = 'absolute';
-      clonedImg.style.left = '50%';
-      clonedImg.style.top = '50%';
-      clonedImg.style.width = '60px';
-      clonedImg.style.height = '60px';
-      clonedImg.style.transform = 'translate(-50%, -50%)';
-      wrapper.appendChild(clonedImg);
 
       try {
-        const pngDataUrl = await toPng(wrapper, { quality: 1 });
+        const pngDataUrl = await toPng(qrCodeElement, { quality: 1 });
+        console.log(pngDataUrl)
 
-        await axios.post(`${serverURL}/qr-code`, { pngDataUrl, qrCodeURL })
+        // await axios.post(`${serverURL}/qr-code`, { pngDataUrl, qrCodeURL })
       } catch (error) {
         console.error('Erro ao converter QR Code para PNG:', error);
       }
