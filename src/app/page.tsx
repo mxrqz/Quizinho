@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowRightCircle, EllipsisVertical, MoonStar, Plus, Sun, Trash2 } from "lucide-react";
+import { ArrowRight, ArrowRightCircle, Check, CircleUserRound, Crown, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X } from "lucide-react";
 
 import LogoSvg from "@/components/svg";
 import { Separator } from "@/components/ui/separator";
@@ -28,6 +28,7 @@ import { WhatsappIcon, WhatsappShareButton } from 'react-share'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StarsBackground } from "@/components/ui/stars-background";
 import { ShootingStars } from "@/components/ui/shooting-stars";
+import { CardSpotlight } from "@/components/ui/card-spotlight";
 
 interface Questions {
   question: string,
@@ -322,9 +323,9 @@ export default function Home() {
 
       <div id="quizinho" className="flex w-full px-4 sm:px-12 lg:px-32 2xl:px-64">
 
-        <div className="w-full overflow-hidden border rounded-lg lg:rounded-3xl p-5 flex flex-col-reverse lg:flex-row gap-5 bg-[#cfbaf0]">
+        <div className="w-full overflow-hidden border rounded-lg lg:rounded-3xl p-5 flex flex-col-reverse lg:flex-row gap-5 bg-violet-500">
 
-          <div className="flex flex-col shrink-0 gap-5 w-full lg:w-[25%] text-black">
+          <div className="flex flex-col shrink-0 gap-5 w-full lg:w-[25%] text-white">
             <h4 className="text-2xl font-semibold text-center">Perguntas</h4>
 
             <ScrollArea className="h-full">
@@ -348,8 +349,8 @@ export default function Home() {
 
                       <Popover>
                         <PopoverTrigger className="aspect-square flex items-center justify-center rounded-md opacity-100 lg:opacity-100
-                            group-hover:opacity-100 transition-opacity absolute top-0 right-0 cursor-pointer">
-                          <EllipsisVertical className="text-muted-foreground" />
+                            group-hover:opacity-100 transition-opacity absolute top-5 right-0 cursor-pointer">
+                          <EllipsisVertical className="text-white" />
                         </PopoverTrigger>
 
                         <PopoverContent className="w-fit flex flex-col gap-3 border-muted-foreground">
@@ -526,12 +527,77 @@ export default function Home() {
                     <DialogHeader>
                       <DialogTitle className="text-xl">Pronto para criar o seu Quizinho?</DialogTitle>
                       <DialogDescription className="text-muted-foreground text-base text-justify text-pretty lg:text-left">
-                        Depois de criar, seu Quizinho estará pronto para ser compartilhado!
-                        Lembre-se, ele não poderá ser editado e ficará disponível por um tempo limitado.
-                        Tem certeza que deseja continuar?
+                        Escolha uma das opções abaixo para continuar:
                       </DialogDescription>
                     </DialogHeader>
 
+                    <div className="grid lg:grid-cols-2 gap-2">
+                      <CardSpotlight className="rounded-lg p-5 flex flex-col gap-3 bg-foreground/10 cursor-pointer overflow-hidden">
+                        <div className="absolute lg:hidden w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
+
+                        <div className="w-full flex gap-2 py-2 relative z-10">
+                          <CircleUserRound />
+                          <span className="font-semibold text-foreground">Grátis</span>
+                        </div>
+
+                        <Button className="bg-violet-500 relative z-10">Selecionar</Button>
+
+                        <ul className="flex flex-col gap-1 relative z-10">
+                          <li className="flex flex-nowrap gap-2">
+                            <X className="text-red-500" />
+                            Todas funcionalidades
+                          </li>
+
+                          <li className="flex flex-nowrap gap-2">
+                            <X className="text-red-500" />
+                            URL personalizada
+                          </li>
+
+                          <li className="flex flex-nowrap gap-2">
+                            <X className="text-red-500" />
+                            Página sem Anúncios
+                          </li>
+
+                          <li className="flex flex-nowrap gap-2">
+                            <Check className="text-green-500" />
+                            Disponível por 1 semana
+                          </li>
+                        </ul>
+                      </CardSpotlight>
+
+                      <CardSpotlight className="rounded-lg p-5 flex flex-col gap-3 bg-foreground/10 cursor-pointer overflow-hidden">
+                        <div className="absolute lg:hidden w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
+              
+                        <div className="w-full flex gap-2 py-2 relative z-20">
+                          <Crown className="text-yellow-500" />
+                          <span className="font-semibold text-foreground">Premium</span>
+                        </div>
+
+                        <Button className="bg-violet-500 relative z-20">Selecionar</Button>
+
+                        <ul className="flex flex-col gap-1 relative z-20">
+                          <li className="flex flex-nowrap gap-2">
+                            <Check className="text-green-500" />
+                            Todas funcionalidades
+                          </li>
+
+                          <li className="flex flex-nowrap gap-2">
+                            <Check className="text-green-500" />
+                            URL personalizada
+                          </li>
+
+                          <li className="flex flex-nowrap gap-2">
+                            <Check className="text-green-500" />
+                            Página sem Anúncios
+                          </li>
+
+                          <li className="flex flex-nowrap gap-2">
+                            <Check className="text-green-500" />
+                            Disponível por 6 mês
+                          </li>
+                        </ul>
+                      </CardSpotlight>
+                    </div>
 
                     <DialogFooter className="flex flex-row justify-end gap-5 w-full">
                       <DialogClose asChild>
