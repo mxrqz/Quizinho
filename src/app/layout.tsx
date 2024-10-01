@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Script from "next/script";
-import Head from "next/head";
 
 export const metadata: Metadata = {
   title: "Quizinho - Crie um Quiz para Seu Amor 💖",
