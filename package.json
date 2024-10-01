@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -33,6 +33,7 @@
     "lucide-react": "^0.446.0",
     "mini-svg-data-uri": "^1.4.4",
     "next": "14.2.13",
+    "next-themes": "^0.3.0",
     "qrcode.react": "^4.0.1",
     "react": "^18.3.1",
     "react-confetti": "^6.1.0",
@@ -42,6 +43,7 @@
     "react-router-dom": "^6.26.2",
     "react-share": "^5.1.0",
     "react-use": "^17.5.1",
+    "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.169.0",

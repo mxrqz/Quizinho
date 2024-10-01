@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowRightCircle, Check, CircleUserRound, Crown, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X } from "lucide-react";
+import { ArrowRight, ArrowRightCircle, Check, CircleUserRound, Crown, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X, Clipboard } from "lucide-react";
 import LogoSvg from "@/components/svg";
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -14,7 +14,6 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Label } from "@/components/ui/label";
 import Loader from "@/components/ui/loading";
 import axios from 'axios';
-import { toPng } from 'html-to-image';
 import * as qr from '@bitjson/qr-code';
 import useWindowSize from 'react-use/lib/useWindowSize';
 import SizedConfetti from 'react-confetti';
@@ -25,6 +24,7 @@ import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, T
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StarsBackground } from "@/components/ui/stars-background";
 import { ShootingStars } from "@/components/ui/shooting-stars";
+import { toast } from "sonner"
 
 interface Questions {
   question: string,
@@ -49,6 +49,7 @@ export default function Home() {
   const [correctAlternative, setCorrectAlternative] = useState<string>('')
   const [selectedPlan, setSelectedPlan] = useState<"free" | "premium" | undefined>(undefined)
   const [customURL, setCustomURL] = useState<string>('')
+  const [invalidURLS, setInvalidURLS] = useState<string[]>([])
 
   const router = useRouter()
   const pathname = usePathname()
@@ -113,15 +114,15 @@ export default function Home() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const loading = router.push(pathname + '?' + createQueryString('loading', 'true'), { scroll: false })
 
-    const quizinhoData = selectedPlan === "premium" ? { questions: questions, customURL: customURL } : { questions }
+    const quizinhoData = selectedPlan === "premium" ? { questions: questions, customURL: customURL, plan: selectedPlan } : { questions, plan: selectedPlan }
 
     const data = await (await axios.post(`${serverURL}/create-quizinho`, quizinhoData)).data
 
-    if (data.url) {
-      window.location.href = data.url
-    } else {
+    if (data.quizinho) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const qrCodeURL = router.push(pathname + '?' + createQueryString('qrCodeURL', data) + '&' + createQueryString('loading', 'false'), { scroll: false })
+      const qrCodeURL = router.push(pathname + '?' + createQueryString('qrCodeURL', data.quizinho) + '&' + createQueryString('loading', 'false'), { scroll: false })
+    } else if (data.payment) {
+      window.location.href = data.payment
     }
   }
 
@@ -173,35 +174,39 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
-    const qrCodeToPNG = async () => {
-      console.log('teste')
-      const qrCodeElement = document.querySelector('qr-code');
-      if (!qrCodeElement) return;
+  const getInvalidURLS = useCallback(async () => {
+    const invalid = (await axios.get(`${serverURL}/invalid_urls`)).data;
+    return invalid;
+  }, []);
 
-      try {
-        const pngDataUrl = await toPng(qrCodeElement, { quality: 1 });
-        console.log(pngDataUrl)
+  // useEffect(() => {
+  //   const qrCodeToPNG = async () => {
+  //     const qrCodeElement = document.querySelector('qr-code');
+  //     if (!qrCodeElement) return;
 
-        // await axios.post(`${serverURL}/qr-code`, { pngDataUrl, qrCodeURL })
-      } catch (error) {
-        console.error('Erro ao converter QR Code para PNG:', error);
-      }
-    }
+  //     try {
+  //       const pngDataUrl = await toPng(qrCodeElement, { quality: 1 });
+  //       console.log(pngDataUrl)
 
-    const qrCodeElement = document.querySelector('qr-code');
-    if (qrCodeElement) {
-      qrCodeElement.addEventListener('codeRendered', () => {
-        qrCodeToPNG()
-      });
-    }
+  //       // await axios.post(`${serverURL}/qr-code`, { pngDataUrl, qrCodeURL })
+  //     } catch (error) {
+  //       console.error('Erro ao converter QR Code para PNG:', error);
+  //     }
+  //   }
 
-    return () => {
-      if (qrCodeElement) {
-        qrCodeElement.removeEventListener('codeRendered', console.log);
-      }
-    };
-  }, [qrCodeURL, loading]);
+  //   const qrCodeElement = document.querySelector('qr-code');
+  //   if (qrCodeElement) {
+  //     qrCodeElement.addEventListener('codeRendered', () => {
+  //       qrCodeToPNG()
+  //     });
+  //   }
+
+  //   return () => {
+  //     if (qrCodeElement) {
+  //       qrCodeElement.removeEventListener('codeRendered', qrCodeToPNG);
+  //     }
+  //   };
+  // }, [qrCodeURL, loading]);
 
   useEffect(() => {
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -218,6 +223,15 @@ export default function Home() {
       qr.defineCustomElements(window);
     }
   }, []);
+
+  useEffect(() => {
+    const fetchInvalidURLS = async () => {
+      const invalid = await getInvalidURLS();
+      setInvalidURLS(invalid)
+    };
+
+    fetchInvalidURLS();
+  }, [getInvalidURLS]);
 
   return (
     <main className="flex flex-col gap-16 lg:gap-24 max-w-full h-full overflow-hidden relative">
@@ -516,7 +530,7 @@ export default function Home() {
                 <Button
                   className="bg-foreground text-background"
                   disabled={questions.length < 2}
-                  onClick={() => router.push(pathname + '?' + createQueryString('modalOpen', 'true'), { scroll: false })}
+                  onClick={() => router.push(pathname + '?' + createQueryString('modal', 'true'), { scroll: false })}
                 >
                   Criar Quizinho
                 </Button>
@@ -606,7 +620,7 @@ export default function Home() {
 
                           <li className="flex flex-nowrap gap-2">
                             <Check className="text-green-500" />
-                            Disponível por 6 mês
+                            Disponível por 6 meses
                           </li>
                         </ul>
                       </div>
@@ -615,10 +629,12 @@ export default function Home() {
                     <div>
                       <Label htmlFor="customUrl">Defina sua URL personalizada (Não use emojis ou caracteres especiais)</Label>
 
-                      <div className="border flex items-center px-2 gap-1 text-foreground/70 font-medium text-base rounded-md focus-within:border-violet-500">
+                      <div className={`border flex items-center px-2 gap-1 text-foreground/70 font-medium text-base rounded-md
+                        ${customURL.length < 5 || invalidURLS.includes(customURL) ? 'focus-within:border-red-500' : 'focus-within:border-violet-500'} 
+                      `}>
                         <span>{quizinhoURL}</span>
                         <Input id="customUrl"
-                          className="border-none ring-0 focus-visible:ring-0 px-0 text-foreground font-medium text-base"
+                          className={`border-none ring-0 focus-visible:ring-0 px-0 text-foreground font-medium text-base`}
                           disabled={selectedPlan !== 'premium'}
                           value={customURL || ''}
                           onChange={(e) => {
@@ -629,6 +645,18 @@ export default function Home() {
                           }}
                         />
                       </div>
+
+                      {selectedPlan === 'premium' && (
+                        <div>
+                          <div className={`text-sm flex items-center gap-2 ${customURL.length < 5 ? 'text-red-500' : 'text-green-500'}`}>
+                            <span>No mínimo 5 caracteres</span>
+                          </div>
+
+                          <div className={`text-sm flex items-center gap-2 ${(invalidURLS.includes(customURL) || customURL.length < 5) ? 'text-red-500' : 'text-green-500'}`}>
+                            <span>URL disponível</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <DialogFooter className="flex flex-row justify-end gap-5 w-full">
@@ -636,7 +664,9 @@ export default function Home() {
                         <Button variant={"outline"} className="w-fit">Cancelar</Button>
                       </DialogClose>
                       <Button onClick={handleCreateQuizinho} className="w-fit bg-violet-500 hover:bg-violet-400"
-                        disabled={!selectedPlan}
+                        disabled={!selectedPlan
+                          // || questions.length < 2
+                          || (selectedPlan === 'premium' && customURL.length < 5 || invalidURLS.includes(customURL.toLowerCase()))}
                       >
                         Criar
                       </Button>
@@ -666,9 +696,9 @@ export default function Home() {
                       </DialogDescription>
                     </DialogHeader>
 
-                    <div className="w-full h-fit flex flex-col items-center gap-5 justify-center">
-                      <div className="size-88 bg-foreground rounded-lg overflow-hidden">
-                        <div className="translate-x-1 scale-110 ">
+                    <div className="w-full h-fit overflow-hidden flex flex-col items-center gap-5 justify-center">
+                      <div className="w-full lg:size-72 bg-white rounded-lg overflow-hidden">
+                        <div className="translate-x-1 translate-y-2 scale-110 ">
                           <qr-code
                             contents={qrCodeURL}
                             squares
@@ -676,9 +706,20 @@ export default function Home() {
                         </div>
                       </div>
 
-                      <a href={qrCodeURL} target="_black">
-                        <span>{qrCodeURL}</span>
-                      </a>
+                      <div className="w-full lg:w-fit flex flex-col lg:flex-row justify-between items-center gap-5 lg:gap-2">
+                        <a href={qrCodeURL} target="_blank" className="w-full lg:w-fit bg-white text-black h-9 flex items-center px-3 text-nowrap rounded-md">
+                          <span>{qrCodeURL}</span>
+                        </a>
+
+                        <Button variant={"outline"} className="w-full lg:w-fit text-foreground border-foreground" onClick={() => {
+                          navigator.clipboard.writeText(qrCodeURL);
+                          toast.message('Link copiado para o Clipboard', {
+                            description: `Link: ${qrCodeURL}`,
+                          })
+                        }}>
+                          <Clipboard />
+                        </Button>
+                      </div>
 
                       <div className="flex gap-2">
                         <WhatsappShareButton windowPosition="windowCenter" title="Quizinho - Crie um quiz para seu amorzinho" separator="" url={'https://trembalajobs.com/elojob'}>

@@ -8,8 +8,8 @@ const serverURL = 'https://api.quizinho.me';
 // const serverURL = 'http://localhost:3001'
 
 const fetchQuizData = cache(async (id: string) => {
-    const { quizinho, img } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data
-    return { quizinho, img }
+    const { quizinho, img, paid } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data
+    return { quizinho, img, paid }
 })
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
@@ -31,10 +31,12 @@ const QuizPage = async ({ params }: { params: { id: string } }) => {
 
     return (
         <>
-            <Script
-                async
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7551677366710429"
-                crossOrigin="anonymous"></Script>
+            {!quizData.paid && (
+                <Script
+                    async
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7551677366710429"
+                    crossOrigin="anonymous"></Script>
+            )}
 
             <QuizComponent quizinho={quizData.quizinho} />
         </>

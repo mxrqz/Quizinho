@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Script from "next/script";
+// import Script from "next/script";
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: "Quizinho - Crie um Quiz para Seu Amor 💖",
@@ -16,13 +17,14 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="google-adsense-account" content="ca-pub-7551677366710429" />
-        <Script
+        {/* <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7551677366710429"
-          crossOrigin="anonymous"></Script>
+          crossOrigin="anonymous"></Script> */}
       </head>
       <body className={`antialiased`}>
         {children}
+        <Toaster />
       </body>
     </html>
   );
