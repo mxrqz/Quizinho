@@ -13,6 +13,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import SizedConfetti from 'react-confetti'
 import useWindowSize from 'react-use/lib/useWindowSize'
 import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton, TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share'
+import { toast } from "sonner";
 
 interface Questions {
     question: string,
@@ -134,10 +135,20 @@ const QuizComponent = ({ quizinho }: { quizinho: Questions[] }) => {
                         </WhatsappShareButton>
                     </div>
 
-                    <a href={currentUrl.href} className="bg-white rounded-md text-center w-full py-2 flex gap-5 px-2 justify-between font-normal">
-                        <span>{currentUrl.host}{currentUrl.pathname}</span>
-                        <span><Clipboard /></span>
-                    </a>
+                    <div className="w-fit flex flex-row justify-between items-center gap-2">
+                        <a href={currentUrl.href} target="_blank" className="w-fit bg-white text-black h-9 flex items-center px-3 text-nowrap rounded-md">
+                            <span>{currentUrl.href}</span>
+                        </a>
+
+                        <Button variant={"outline"} className="w-fit text-white bg-transparent border-white" onClick={() => {
+                            navigator.clipboard.writeText(currentUrl.href);
+                            toast.message('Link copiado para o Clipboard', {
+                                description: `Link: ${currentUrl.href}`,
+                            })
+                        }}>
+                            <Clipboard />
+                        </Button>
+                    </div>
                 </div>
             )
         )
@@ -242,7 +253,6 @@ const QuizComponent = ({ quizinho }: { quizinho: Questions[] }) => {
                 )}
             </div>
 
-
             {currentUrl && (
                 <Drawer>
                     <DrawerTrigger className="bg-foreground flex lg:hidden w-44 h-10 justify-center items-center z-20 absolute right-4 bottom-0 rounded-t-lg">
@@ -282,10 +292,23 @@ const QuizComponent = ({ quizinho }: { quizinho: Questions[] }) => {
                                 </WhatsappShareButton>
                             </div>
 
-                            <a href={currentUrl.href} className="bg-white rounded-md text-center w-full py-2 flex px-2 justify-between font-normal">
-                                <span>{currentUrl.host}{currentUrl.pathname}</span>
-                                <span><Clipboard /></span>
-                            </a>
+                            <div className="w-full flex flex-row justify-between items-center gap-5">
+                                <a href={currentUrl.href} target="_blank" className="w-full bg-white text-black h-9 flex items-center px-3 text-nowrap rounded-md">
+                                    <span>{currentUrl.href}</span>
+                                </a>
+
+                                <Button variant={"outline"}
+                                className="w-full text-foreground border-foreground bg-white text-black"
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(currentUrl.href);
+                                        toast.message('Link copiado para o Clipboard', {
+                                            description: `Link: ${currentUrl.href}`,
+                                        })
+                                    }}
+                                >
+                                    <Clipboard />
+                                </Button>
+                            </div>
                         </div>
                     </DrawerContent>
                 </Drawer>

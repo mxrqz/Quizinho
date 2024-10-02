@@ -34,8 +34,8 @@ interface Questions {
 
 const questionsAmount = 4
 
-const serverURL = 'https://api.quizinho.me'
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://api.quizinho.me'
+const serverURL = 'http://localhost:3001'
 const quizinhoURL = 'quizinho.me/'
 
 export default function Home() {
@@ -742,7 +742,6 @@ export default function Home() {
                           <LinkedinIcon round size={32} />
                         </LinkedinShareButton>
                       </div>
-
                     </div>
                   </>
                 )}
