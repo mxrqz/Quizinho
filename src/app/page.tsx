@@ -2,12 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowRightCircle, Check, CircleUserRound, Crown, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X, Clipboard } from "lucide-react";
+import { ArrowRight, ArrowRightCircle, Check, CircleUserRound, Crown, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X, Clipboard, Square } from "lucide-react";
 import LogoSvg from "@/components/svg";
-import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
@@ -24,7 +23,8 @@ import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, T
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StarsBackground } from "@/components/ui/stars-background";
 import { ShootingStars } from "@/components/ui/shooting-stars";
-import { toast } from "sonner"
+import { toast } from "sonner";
+import QuizinhoExample from "./quizinhoExample";
 
 interface Questions {
   question: string,
@@ -60,6 +60,8 @@ export default function Home() {
   const qrCodeURL = searchParams.get('qrCodeURL') || ''
   const getModal = searchParams.get('modal') || 'false'
   const modalOpen = getModal === 'true' ? true : false
+
+  const id = searchParams.get('id') || ''
 
   const setMode = (mode: "light" | "dark") => {
     localStorage.theme = mode
@@ -114,7 +116,7 @@ export default function Home() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const loading = router.push(pathname + '?' + createQueryString('loading', 'true'), { scroll: false })
 
-    const quizinhoData = selectedPlan === "premium" ? { questions: questions, customURL: customURL, plan: selectedPlan } : { questions, plan: selectedPlan }
+    const quizinhoData = selectedPlan === "premium" ? { questions: questions, customURL: customURL, plan: selectedPlan } : { questions, plan: selectedPlan, id: id || '' }
 
     const data = await (await axios.post(`${serverURL}/create-quizinho`, quizinhoData)).data
 
@@ -234,83 +236,107 @@ export default function Home() {
   }, [getInvalidURLS]);
 
   return (
-    <main className="flex flex-col gap-16 lg:gap-24 max-w-full h-full overflow-hidden relative">
-      <div className="absolute top-0 left-0 w-full h-full invert dark:invert-0">
-        <ShootingStars />
-        <StarsBackground starDensity={0.00025} allStarsTwinkle={false} twinkleProbability={0.4} />
+    <main className="flex flex-col max-w-full h-full overflow-hidden relative">
+      
+      <div className="relative w-full h-full flex flex-col gap-16 pb-44">
+        <div className="absolute top-0 left-0 w-full h-full invert dark:invert-0">
+          <ShootingStars />
+          <StarsBackground starDensity={0.00025} allStarsTwinkle={false} twinkleProbability={0.4} />
+        </div>
+
+        <nav className="flex justify-between items-center lg:items-end sticky top-0 left-0 w-full h-12 lg:h-24 pt-12 lg:pt-0 py-2 px-4 sm:px-12 lg:px-32 2xl:px-64 transition-all backdrop-blur-sm z-10">
+          <a href="/">
+            <div className="flex gap-5 items-center">
+              <LogoSvg size={36} className="fill-foreground transition-all" />
+              <h1 className="text-3xl font-semibold text-foreground transition-all">Quizinho</h1>
+            </div>
+          </a>
+
+          <div>
+            {darkMode ? (
+              <MoonStar className="text-foreground transition-all" cursor={'pointer'} onClick={() => setMode('light')} />
+            ) : (
+              <Sun className="text-foreground transition-all" cursor={'pointer'} onClick={() => setMode('dark')} />
+            )}
+          </div>
+        </nav>
+
+        <section className="relative flex flex-col items-center justify-between  gap-16 lg:gap-5 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64">
+          <div className="w-full lg:w-[35%] flex flex-col gap-10 items-center lg:items-start justify-center text-pretty">
+
+            <div className="absolute -top-10 left-0 lg:left-36 w-fit flex items-center blur-2xl opacity-100 dark:opacity-10 rotate-180">
+              <img src="./blob_gradient.png" alt="blob" />
+            </div>
+
+            <div className="relative flex flex-col gap-2 text-center lg:text-start">
+              <h2 className="text-3xl lg:text-5xl font-semibold">Descubra se seu amor te conhece de <span className="inline-block bg-primary text-primary-foreground w-fit rounded-md px-4 py-1">verdade!</span></h2>
+              <p className="text-lg lg:text-xl font-medium text-pretty">Crie um quiz personalizado e divertido para o seu namorado(a) e compartilhe através de um QR code único!</p>
+            </div>
+
+            <a href="#quizinho">
+              <Button variant={'ghost'} className="relative px-0 w-fit text-lg flex gap-2 hover:bg-transparent hover:text-primary transition-colors group hover:underline">
+                Crie seu Quizinho
+                <ArrowRight className="group-hover:translate-x-1.5 transition-transform" />
+              </Button>
+            </a>
+          </div>
+
+          <div className="w-full lg:w-[50%] max-h-max aspect-video border rounded-lg lg:rounded-2xl relative flex flex-col">
+
+            <div className="absolute w-full h-full top-0 left-0">
+              <motion.div className="hidden absolute lg:inline-block top-0 left-0 w-full h-full"
+                variants={container}
+                initial="hidden"
+                animate="show"
+              >
+                <motion.div className="absolute w-full h-full bg-primary -z-10 rounded-lg lg:rounded-2xl"
+                  variants={item1}>
+                </motion.div>
+
+                <motion.div className="absolute w-full h-full bg-violet-500 -z-20 rounded-lg lg:rounded-2xl"
+                  variants={item2}>
+                </motion.div>
+              </motion.div>
+
+              <div className="w-2/4 h-2/4 absolute top-0 -translate-y-1/3 left-0 -translate-x-1/3 flex items-center overflow-hidden -z-20">
+                <ul className="w-full aspect-square grid grid-cols-6 grid-rows-6 absolute scale-125 maskImage">
+                  {Array.from({ length: 36 }).map((_, index) => (
+                    <li key={index} className="border-b border-r border-primary"></li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="w-1/3 h-1/3 absolute bottom-0 translate-y-1/2 right-0 translate-x-1/2 -z-20">
+                <ul className="grid grid-cols-9 grid-rows-9 place-items-center w-full h-full maskImage2">
+                  {Array.from({ length: (9 * 9) }).map((_, index) => (
+                    <li key={index} className="size-1 bg-primary rounded-full"></li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="w-full h-12 bg-neutral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
+
+              <div className="size-5">
+                <img src="./quizinho-light-purple.svg" alt="quizinho logo" />
+              </div>
+
+              <ul className="flex gap-2 items-center h-full">
+                <li className="size-2 bg-neutral-200 rounded-full"></li>
+                <li className="size-2 bg-neutral-400 rounded-full"></li>
+                <li className="size-2 bg-neutral-600 rounded-full"></li>
+              </ul>
+            </div>
+
+            <div className="w-full h-full rounded-b-lg lg:rounded-b-2xl relative bg-white"></div>
+
+          </div>
+        </section>
       </div>
 
-      <nav className="flex justify-between items-center lg:items-end sticky left-0 w-full h-12 lg:h-24 top-0 pt-12 lg:pt-0 py-2 px-4 sm:px-12 lg:px-32 2xl:px-64 transition-all backdrop-blur-sm z-10">
-        <a href="/">
-          <div className="flex gap-5 items-center">
-            <LogoSvg size={36} className="fill-foreground transition-all" />
-            <h1 className="text-3xl font-semibold text-foreground transition-all">Quizinho</h1>
-          </div>
-        </a>
+      <section className="relative flex gap-12 w-full px-4 py-32 sm:px12 lg:px-32 2xl:px-64 bg-foreground/10">
 
-        <div>
-          {darkMode ? (
-            <MoonStar className="text-foreground transition-all" cursor={'pointer'} onClick={() => setMode('light')} />
-          ) : (
-            <Sun className="text-foreground transition-all" cursor={'pointer'} onClick={() => setMode('dark')} />
-          )}
-        </div>
-      </nav>
-
-      <div className="relative flex flex-col items-center justify-between gap-16 lg:gap-5 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64">
-        <div className="w-full lg:w-[35%] flex flex-col gap-10 items-center lg:items-start justify-center text-pretty">
-
-          <div className="absolute -top-10 left-0 lg:left-36 w-fit flex items-center blur-2xl opacity-100 dark:opacity-10 rotate-180">
-            <img src="./blob_gradient.png" alt="blob" />
-          </div>
-
-          <div className="relative flex flex-col gap-2 text-center lg:text-start">
-            <h2 className="text-3xl lg:text-5xl font-semibold">Descubra se seu amor te conhece de <span className="inline-block bg-primary text-primary-foreground w-fit rounded-md px-4 py-1">verdade!</span></h2>
-            <p className="text-lg lg:text-xl font-medium text-pretty">Crie um quiz personalizado e divertido para o seu namorado(a) e compartilhe através de um QR code único!</p>
-          </div>
-
-          <a href="#quizinho">
-            <Button variant={'ghost'} className="relative px-0 w-fit text-lg flex gap-2 hover:bg-transparent hover:text-primary transition-colors group hover:underline">
-              Crie seu Quizinho
-              <ArrowRight className="group-hover:translate-x-1.5 transition-transform" />
-            </Button>
-          </a>
-        </div>
-
-        <div className="w-full lg:w-[50%] max-h-max aspect-video border rounded-lg lg:rounded-2xl relative flex flex-col">
-
-          <div className="absolute w-full h-full top-0 left-0">
-            <motion.div className="hidden absolute lg:inline-block top-0 left-0 w-full h-full"
-              variants={container}
-              initial="hidden"
-              animate="show"
-            >
-              <motion.div className="absolute w-full h-full bg-primary -z-10 rounded-lg lg:rounded-2xl"
-                variants={item1}>
-              </motion.div>
-
-              <motion.div className="absolute w-full h-full bg-violet-500 -z-20 rounded-lg lg:rounded-2xl"
-                variants={item2}>
-              </motion.div>
-            </motion.div>
-
-            <div className="w-2/4 h-2/4 absolute top-0 -translate-y-1/3 left-0 -translate-x-1/3 flex items-center overflow-hidden -z-20">
-              <ul className="w-full aspect-square grid grid-cols-6 grid-rows-6 absolute scale-125 maskImage">
-                {Array.from({ length: 36 }).map((_, index) => (
-                  <li key={index} className="border-b border-r border-primary"></li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="w-1/3 h-1/3 absolute bottom-0 translate-y-1/2 right-0 translate-x-1/2 -z-20">
-              <ul className="grid grid-cols-9 grid-rows-9 place-items-center w-full h-full maskImage2">
-                {Array.from({ length: (9 * 9) }).map((_, index) => (
-                  <li key={index} className="size-1 bg-primary rounded-full"></li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
+        <div className="w-full aspect-video flex flex-col border border-white rounded-2xl overflow-hidden">
           <div className="w-full h-12 bg-neutral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
 
             <div className="size-5">
@@ -324,14 +350,38 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="w-full h-full rounded-b-lg lg:rounded-b-2xl relative bg-white"></div>
-
+          <QuizinhoExample className="w-full h-full bg-background flex flex-col justify-center items-center overflow-hidden" />
         </div>
-      </div>
 
-      <Separator className="bg-muted-foreground hidden lg:inline-block" />
+        <div className="flex flex-col gap-5">
+          <h3 className="text-5xl font-semibold text-nowrap">Crie seu Quizinho</h3>
 
-      <div id="quizinho" className="relative flex w-full px-4 sm:px-12 lg:px-32 2xl:px-64">
+          <ul className="flex flex-col text-start text-xl gap-5">
+            <li className="flex items-start gap-2">
+              <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
+              Seu Quizinho fácil e rápido: Não precisa de conta ou login para criar e compartilhar seu Quizinho.
+            </li>
+
+            <li className="flex items-start gap-2">
+              <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
+              Personalize seu Quizinho com uma váriedade de temas.
+            </li>
+
+            <li className="flex items-start gap-2">
+              <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
+              Compartilhe seu Quizinho com facilidade através de um QR Code único ou URL customizável.
+            </li>
+
+            <li className="flex items-start gap-2">
+              <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
+              Ideal para momentos especiais: Crie quizzes para surpreender seu amor, amigos ou familiares de forma divertida e interativa.
+            </li>
+          </ul>
+        </div>
+
+      </section>
+
+      <section id="quizinho" className="relative flex w-full px-4 mt-32 sm:px-12 lg:px-32 2xl:px-64">
         <div className="w-full overflow-hidden border rounded-lg lg:rounded-3xl p-5 flex flex-col-reverse lg:flex-row gap-5 bg-violet-500">
 
           <div className="flex flex-col shrink-0 gap-5 w-full lg:w-[25%] text-white">
@@ -546,8 +596,8 @@ export default function Home() {
                       </DialogDescription>
                     </DialogHeader>
 
-                    <div className="grid lg:grid-cols-2 gap-2">
-                      <div className={`rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "free" && "bg-foreground/10 border-white"}`}
+                    {/* <div className="grid grid-cols-2 gap-2 max-h-full">
+                      <div className={`min-w-max rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "free" && "bg-foreground/10 border-white"}`}
                         onClick={() => setSelectedPlan("free")}
                       >
                         <div className="absolute w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
@@ -576,7 +626,7 @@ export default function Home() {
 
                           <li className="flex flex-nowrap gap-2">
                             <X className="text-red-500" />
-                            Página sem Anúncios
+                            Página com Anúncios
                           </li>
 
                           <li className="flex flex-nowrap gap-2">
@@ -586,7 +636,7 @@ export default function Home() {
                         </ul>
                       </div>
 
-                      <div className={`rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "premium" && "bg-foreground/10 border-white"}`}
+                      <div className={`min-w-max rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "premium" && "bg-foreground/10 border-white"}`}
                         onClick={() => setSelectedPlan("premium")}
                       >
                         <div className="absolute w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
@@ -624,9 +674,92 @@ export default function Home() {
                           </li>
                         </ul>
                       </div>
-                    </div>
+                    </div> */}
 
-                    <div>
+                    <ScrollArea>
+                      <div className="flex gap-2 min-w-max lg:min-w-full">
+                        <div className={`w-52 lg:w-full h-fit rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "free" && "bg-foreground/10 border-white"}`}
+                          onClick={() => setSelectedPlan("free")}
+                        >
+                          <div className="absolute w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                              <CircleUserRound />
+                              <span className="font-semibold text-foreground">Grátis</span>
+                            </div>
+
+                            <span className="text-xl font-semibold text-foreground">R$0</span>
+                          </div>
+
+                          <Button variant={"outline"} className="hidden lg:inline-flex border-white bg-transparent">Selecionar</Button>
+
+                          <ul className="flex flex-col gap-1">
+                            <li className="flex flex-nowrap gap-2">
+                              <X className="text-red-500" />
+                              Todas funcionalidades
+                            </li>
+
+                            <li className="flex flex-nowrap gap-2">
+                              <X className="text-red-500" />
+                              URL personalizada
+                            </li>
+
+                            <li className="flex flex-nowrap gap-2">
+                              <X className="text-red-500" />
+                              Página com Anúncios
+                            </li>
+
+                            <li className="flex flex-nowrap gap-2">
+                              <Check className="text-green-500" />
+                              Disponível por 1 semana
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div className={`w-52 lg:w-full h-fit rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "premium" && "bg-foreground/10 border-white"}`}
+                          onClick={() => setSelectedPlan("premium")}
+                        >
+                          <div className="absolute w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                              <Crown className="text-yellow-500" />
+                              <span className="font-semibold text-foreground">Premium</span>
+                            </div>
+
+                            <span className="text-xl font-semibold text-foreground">R$5</span>
+                          </div>
+
+                          <Button variant={"outline"} className="hidden lg:inline-flex border-white bg-transparent">Selecionar</Button>
+
+                          <ul className="flex flex-col gap-1">
+                            <li className="flex flex-nowrap gap-2">
+                              <Check className="text-green-500" />
+                              Todas funcionalidades
+                            </li>
+
+                            <li className="flex flex-nowrap gap-2">
+                              <Check className="text-green-500" />
+                              URL personalizada
+                            </li>
+
+                            <li className="flex flex-nowrap gap-2">
+                              <Check className="text-green-500" />
+                              Página sem Anúncios
+                            </li>
+
+                            <li className="flex flex-nowrap gap-2">
+                              <Check className="text-green-500" />
+                              Disponível por 6 meses
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <ScrollBar orientation="horizontal" />
+                    </ScrollArea>
+
+                    <div className={`${selectedPlan !== 'premium' ? 'opacity-50' : 'opacity-100'} transition-opacity`}>
                       <Label htmlFor="customUrl">Defina sua URL personalizada (Não use emojis ou caracteres especiais)</Label>
 
                       <div className={`border flex items-center px-2 gap-1 text-foreground/70 font-medium text-base rounded-md
@@ -646,17 +779,15 @@ export default function Home() {
                         />
                       </div>
 
-                      {selectedPlan === 'premium' && (
-                        <div>
-                          <div className={`text-sm flex items-center gap-2 ${customURL.length < 5 ? 'text-red-500' : 'text-green-500'}`}>
-                            <span>No mínimo 5 caracteres</span>
-                          </div>
-
-                          <div className={`text-sm flex items-center gap-2 ${(invalidURLS.includes(customURL) || customURL.length < 5) ? 'text-red-500' : 'text-green-500'}`}>
-                            <span>URL disponível</span>
-                          </div>
+                      <div className={`${selectedPlan !== 'premium' ? 'opacity-0' : 'opacity-100'} transition-opacity`}>
+                        <div className={`text-sm flex items-center gap-2 ${customURL.length < 5 ? 'text-red-500' : 'text-green-500'}`}>
+                          <span>No mínimo 5 caracteres</span>
                         </div>
-                      )}
+
+                        <div className={`text-sm flex items-center gap-2 ${(invalidURLS.includes(customURL) || customURL.length < 5) ? 'text-red-500' : 'text-green-500'}`}>
+                          <span>URL disponível</span>
+                        </div>
+                      </div>
                     </div>
 
                     <DialogFooter className="flex flex-row justify-end gap-5 w-full">
@@ -817,7 +948,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {!loading && qrCodeURL && (
         <SizedConfetti
