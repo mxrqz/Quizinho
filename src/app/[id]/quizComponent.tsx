@@ -14,6 +14,7 @@ import SizedConfetti from 'react-confetti'
 import useWindowSize from 'react-use/lib/useWindowSize'
 import { FacebookIcon, FacebookShareButton, LinkedinIcon, LinkedinShareButton, TelegramIcon, TelegramShareButton, TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share'
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface Questions {
     question: string,
@@ -21,7 +22,7 @@ interface Questions {
     correctAlternative: string
 }
 
-const QuizComponent = ({ quizinho }: { quizinho: Questions[] }) => {
+const QuizComponent = ({ quizinho, theme }: { quizinho: Questions[], theme: string }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState<number>(0);
     const [selectedAlternative, setSelectedAlternative] = React.useState<string>('');
     const [score, setScore] = React.useState(0);
@@ -156,22 +157,26 @@ const QuizComponent = ({ quizinho }: { quizinho: Questions[] }) => {
 
     return (
         <div className="w-full h-screen bg-background flex flex-col overflow-hidden">
-            <div className="absolute w-full h-full">
-                <div className="hidden dark:inline">
-                    <ShootingStars />
-                    <StarsBackground starDensity={0.00025} twinkleProbability={0.4} />
-                </div>
+            {theme === 'undefined' || !theme ? (
+                <div className="absolute w-full h-full">
+                    <div className="hidden dark:inline">
+                        <ShootingStars />
+                        <StarsBackground starDensity={0.00025} twinkleProbability={0.4} />
+                    </div>
 
-                <div className="w-full h-full absolute top-0 left-0 flex items-center overflow-hidden blur-[2px] maskImageCircle dark:hidden">
-                    <ul className="w-full aspect-square grid grid-cols-[repeat(15,minmax(0,1fr))] grid-rows-[repeat(15,minmax(0,1fr))] scale-125">
-                        {Array.from({ length: (15 * 15) }).map((_, index) => (
-                            <li key={index} className="border-b-2 border-r-2 dark:border-b dark:border-r border-[#cfbaf0] transition-all"></li>
-                        ))}
-                    </ul>
+                    <div className="w-full h-full absolute top-0 left-0 flex items-center overflow-hidden blur-[2px] maskImageCircle dark:hidden">
+                        <ul className="w-full aspect-square grid grid-cols-[repeat(15,minmax(0,1fr))] grid-rows-[repeat(15,minmax(0,1fr))] scale-125">
+                            {Array.from({ length: (15 * 15) }).map((_, index) => (
+                                <li key={index} className="border-b-2 border-r-2 dark:border-b dark:border-r border-[#cfbaf0] transition-all"></li>
+                            ))}
+                        </ul>
 
-                    <img src="./blob_gradient.png" alt="blob" className="absolute left-1/2 -translate-x-1/2 blur-2xl dark:opacity-10" />
-                </div>
-            </div>
+                        <Image src="/blob_gradient.png" alt="blob" width={500} height={500} className="absolute left-1/2 -translate-x-1/2 blur-2xl dark:opacity-10" />
+                    </div>
+                </div >
+            ) : (
+                <Image src={theme} fill className="top-0 left-0 object-cover" alt="theme bg" quality={100} />
+            )}
 
             <nav className="flex justify-between items-center lg:items-end absolute left-0 w-full h-12 lg:h-24 top-0 pt-12 lg:pt-0 py-2 px-4 sm:px-12 lg:px-32 2xl:px-64 transition-all z-10">
                 <a href="/">
@@ -193,7 +198,7 @@ const QuizComponent = ({ quizinho }: { quizinho: Questions[] }) => {
             <div className="w-full h-full flex items-center justify-center py-2 px-4 sm:px-12 lg:px-32 2xl:px-64">
                 {!isQuizCompleted ? (
                     <div className="flex flex-col w-full lg:w-1/2 gap-5 items-center relative">
-                        <div className="border border-primary bg-background w-full h-full min-h-64 p-5 gap-5 flex flex-col items-center justify-center rounded-lg relative">
+                        <div className="border border-primary bg-background/70 backdrop-blur-sm w-full h-full min-h-64 p-5 gap-5 flex flex-col items-center justify-center rounded-lg relative">
                             <h3 className="text-3xl font-semibold text-center relative text-pretty">
                                 {currentQuestion.question}
                             </h3>
@@ -217,7 +222,7 @@ const QuizComponent = ({ quizinho }: { quizinho: Questions[] }) => {
                             </RadioGroup>
                         </div>
 
-                        <div className="relative bg-background border border-primary rounded-full p-2 w-full lg:w-1/2 flex justify-between gap-2">
+                        <div className="relative bg-background/70 backdrop-blur-sm border border-primary rounded-full p-2 w-full lg:w-1/2 flex justify-between gap-2">
                             <Button onClick={handlePreviousQuestion} disabled={currentQuestionIndex === 0} className="rounded-full w-full bg-foreground hover:bg-foreground/80 text-background">
                                 Anterior
                             </Button>
@@ -298,7 +303,7 @@ const QuizComponent = ({ quizinho }: { quizinho: Questions[] }) => {
                                 </a>
 
                                 <Button variant={"outline"}
-                                className="w-full text-foreground border-foreground bg-white text-black"
+                                    className="w-full text-foreground border-foreground bg-white text-black"
                                     onClick={() => {
                                         navigator.clipboard.writeText(currentUrl.href);
                                         toast.message('Link copiado para o Clipboard', {
@@ -316,7 +321,7 @@ const QuizComponent = ({ quizinho }: { quizinho: Questions[] }) => {
 
             <QrCodeContainer />
 
-        </div>
+        </div >
     );
 };
 

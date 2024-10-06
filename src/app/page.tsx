@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowRightCircle, Check, CircleUserRound, Crown, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X, Clipboard, Square } from "lucide-react";
+import { ArrowRight, ArrowRightCircle, Check, CircleUserRound, Crown, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X, Clipboard, Square, Ban } from "lucide-react";
 import LogoSvg from "@/components/svg";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,8 @@ import { StarsBackground } from "@/components/ui/stars-background";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import { toast } from "sonner";
 import QuizinhoExample from "./quizinhoExample";
+import { Themes } from "./Themes";
+import Image from "next/image";
 
 interface Questions {
   question: string,
@@ -34,8 +36,8 @@ interface Questions {
 
 const questionsAmount = 4
 
-const serverURL = 'https://api.quizinho.me'
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://api.quizinho.me'
+const serverURL = 'http://localhost:3001'
 const quizinhoURL = 'quizinho.me/'
 
 export default function Home() {
@@ -62,6 +64,13 @@ export default function Home() {
   const modalOpen = getModal === 'true' ? true : false
 
   const id = searchParams.get('id') || ''
+
+  const { width, height } = useWindowSize()
+
+  const getInvalidURLS = useCallback(async () => {
+    const invalid = (await axios.get(`${serverURL}/invalid_urls`)).data;
+    return invalid;
+  }, []);
 
   const setMode = (mode: "light" | "dark") => {
     localStorage.theme = mode
@@ -116,7 +125,7 @@ export default function Home() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const loading = router.push(pathname + '?' + createQueryString('loading', 'true'), { scroll: false })
 
-    const quizinhoData = selectedPlan === "premium" ? { questions: questions, customURL: customURL, plan: selectedPlan } : { questions, plan: selectedPlan, id: id || '' }
+    const quizinhoData = selectedPlan === "premium" ? { questions: questions, customURL: customURL, plan: selectedPlan, theme: selectedTheme } : { questions, plan: selectedPlan, id: id || '' }
 
     const data = await (await axios.post(`${serverURL}/create-quizinho`, quizinhoData)).data
 
@@ -137,49 +146,6 @@ export default function Home() {
     },
     [searchParams]
   )
-
-  const { width, height } = useWindowSize()
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.5,
-      }
-    }
-  }
-
-  const item1 = {
-    hidden: {
-      opacity: 0,
-      x: 0,
-      y: 0,
-    },
-    show: {
-      opacity: 1,
-      x: "1.25rem",
-      y: "1.25rem",
-    }
-  }
-
-  const item2 = {
-    hidden: {
-      opacity: 0,
-      x: "1.25rem",
-      y: "1.25rem"
-    },
-    show: {
-      opacity: 1,
-      x: "2.5rem",
-      y: "2.5rem",
-    }
-  }
-
-  const getInvalidURLS = useCallback(async () => {
-    const invalid = (await axios.get(`${serverURL}/invalid_urls`)).data;
-    return invalid;
-  }, []);
 
   // useEffect(() => {
   //   const qrCodeToPNG = async () => {
@@ -235,9 +201,13 @@ export default function Home() {
     fetchInvalidURLS();
   }, [getInvalidURLS]);
 
+  const [themesOpen, setThemesOpen] = useState<boolean>(false)
+  const [selectedTheme, setSelectedTheme] = useState<string>('default')
+  const [themeDarkMode, setThemeDarkMode] = useState<boolean>(true)
+
   return (
     <main className="flex flex-col max-w-full h-full overflow-hidden relative">
-      
+
       <div className="relative w-full h-full flex flex-col gap-16 pb-44">
         <div className="absolute top-0 left-0 w-full h-full invert dark:invert-0">
           <ShootingStars />
@@ -261,7 +231,7 @@ export default function Home() {
           </div>
         </nav>
 
-        <section className="relative flex flex-col items-center justify-between  gap-16 lg:gap-5 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64">
+        <section className="relative flex flex-col items-center justify-between gap-16 lg:gap-5 px-4 sm:px-12 lg:flex-row lg:px-32 2xl:px-64">
           <div className="w-full lg:w-[35%] flex flex-col gap-10 items-center lg:items-start justify-center text-pretty">
 
             <div className="absolute -top-10 left-0 lg:left-36 w-fit flex items-center blur-2xl opacity-100 dark:opacity-10 rotate-180">
@@ -285,17 +255,44 @@ export default function Home() {
 
             <div className="absolute w-full h-full top-0 left-0">
               <motion.div className="hidden absolute lg:inline-block top-0 left-0 w-full h-full"
-                variants={container}
-                initial="hidden"
-                animate="show"
+                initial={{
+                  opacity: 1,
+                  x: "0rem",
+                  y: "0rem",
+                }}
+                animate={{
+                  opacity: 1,
+                  x: "1.25rem",
+                  y: "1.25rem",
+                  transition: {
+                    repeat: Infinity,
+                    repeatDelay: 4,
+                    repeatType: "reverse",
+                    delay: 0.5,
+                  }
+                }}
               >
-                <motion.div className="absolute w-full h-full bg-primary -z-10 rounded-lg lg:rounded-2xl"
-                  variants={item1}>
-                </motion.div>
+                <motion.div className="absolute w-full h-full bg-primary -z-10 rounded-lg lg:rounded-2xl"></motion.div>
 
                 <motion.div className="absolute w-full h-full bg-violet-500 -z-20 rounded-lg lg:rounded-2xl"
-                  variants={item2}>
+                  initial={{
+                    opacity: 1,
+                    x: "0rem",
+                    y: "0rem",
+                  }}
+                  animate={{
+                    opacity: 1,
+                    x: "1.25rem",
+                    y: "1.25rem",
+                    transition: {
+                      repeat: Infinity,
+                      repeatDelay: 4,
+                      repeatType: "reverse",
+                    }
+                  }}
+                >
                 </motion.div>
+
               </motion.div>
 
               <div className="w-2/4 h-2/4 absolute top-0 -translate-y-1/3 left-0 -translate-x-1/3 flex items-center overflow-hidden -z-20">
@@ -332,58 +329,77 @@ export default function Home() {
 
           </div>
         </section>
-      </div>
+      </div >
 
-      <section className="relative flex gap-12 w-full px-4 py-32 sm:px12 lg:px-32 2xl:px-64 bg-foreground/10">
+      <div className="relative flex flex-col gap-32 w-full px-4 py-32 sm:px12 lg:px-32 2xl:px-64 bg-foreground/5">
 
-        <div className="w-full aspect-video flex flex-col border border-white rounded-2xl overflow-hidden">
-          <div className="w-full h-12 bg-neutral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
+        <section className="grid grid-cols-[50%,35%] justify-between gap-12">
+          <div className="w-full flex flex-col border border-white rounded-2xl relative">
+            <div className="w-full h-12 bg-neutral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
 
-            <div className="size-5">
-              <img src="./quizinho-light-purple.svg" alt="quizinho logo" />
+              <div className="size-5">
+                <img src="./quizinho-light-purple.svg" alt="quizinho logo" />
+              </div>
+
+              <ul className="flex gap-2 items-center h-full">
+                <li className="size-2 bg-neutral-200 rounded-full"></li>
+                <li className="size-2 bg-neutral-400 rounded-full"></li>
+                <li className="size-2 bg-neutral-600 rounded-full"></li>
+              </ul>
             </div>
 
-            <ul className="flex gap-2 items-center h-full">
-              <li className="size-2 bg-neutral-200 rounded-full"></li>
-              <li className="size-2 bg-neutral-400 rounded-full"></li>
-              <li className="size-2 bg-neutral-600 rounded-full"></li>
-            </ul>
+            <QuizinhoExample className="w-full h-full bg-background flex flex-col justify-center items-center overflow-hidden rounded-2xl" />
+
+            <div className="absolute bottom-0 right-0 translate-y-1/2 translate-x-1/2">
+              <Image src={"/quizinho-logo-alt.png"} alt="Quizinho logo" height={100} width={100} className="" />
+            </div>
           </div>
 
-          <QuizinhoExample className="w-full h-full bg-background flex flex-col justify-center items-center overflow-hidden" />
-        </div>
+          <div className="w-full flex flex-col gap-5">
+            <h3 className="text-4xl font-medium text-nowrap">Crie seu Quizinho</h3>
 
-        <div className="flex flex-col gap-5">
-          <h3 className="text-5xl font-semibold text-nowrap">Crie seu Quizinho</h3>
+            <ul className="flex flex-col text-start text-xl gap-5">
+              <li className="flex items-start gap-2">
+                <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
+                Seu Quizinho fácil e rápido: Não precisa de conta ou login para criar e compartilhar seu Quizinho.
+              </li>
 
-          <ul className="flex flex-col text-start text-xl gap-5">
-            <li className="flex items-start gap-2">
-              <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
-              Seu Quizinho fácil e rápido: Não precisa de conta ou login para criar e compartilhar seu Quizinho.
-            </li>
+              <li className="flex items-start gap-2">
+                <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
+                Personalize seu Quizinho com uma váriedade de temas.
+              </li>
 
-            <li className="flex items-start gap-2">
-              <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
-              Personalize seu Quizinho com uma váriedade de temas.
-            </li>
+              <li className="flex items-start gap-2">
+                <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
+                Compartilhe seu Quizinho com facilidade através de um QR Code único ou URL customizável.
+              </li>
 
-            <li className="flex items-start gap-2">
-              <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
-              Compartilhe seu Quizinho com facilidade através de um QR Code único ou URL customizável.
-            </li>
+              <li className="flex items-start gap-2">
+                <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
+                Ideal para momentos especiais: Crie quizzes para surpreender seu amor, amigos ou familiares de forma divertida e interativa.
+              </li>
+            </ul>
+          </div>
+        </section>
 
-            <li className="flex items-start gap-2">
-              <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
-              Ideal para momentos especiais: Crie quizzes para surpreender seu amor, amigos ou familiares de forma divertida e interativa.
-            </li>
+        <section className="w-full flex flex-col gap-12 items-center justify-center">
+          <h3 className="text-4xl font-medium">Temas</h3>
+
+          <ul className="grid grid-cols-3 gap-10 w-full overflow-hidden">
+            {Themes.map((theme, index) => (
+              <li key={index} className="flex flex-col gap-2 overflow-hidden">
+                <Image src={theme.path} alt={theme.title} width={1080} height={1080} className="w-full aspect-video bg-foreground/10 rounded-lg " />
+
+                <span className="px-5 font-medium text-lg">{theme.title}</span>
+              </li>
+            ))}
           </ul>
-        </div>
+        </section>
 
-      </section>
+      </div>
 
       <section id="quizinho" className="relative flex w-full px-4 mt-32 sm:px-12 lg:px-32 2xl:px-64">
-        <div className="w-full overflow-hidden border rounded-lg lg:rounded-3xl p-5 flex flex-col-reverse lg:flex-row gap-5 bg-violet-500">
-
+        <div className="w-full overflow-hidden rounded-lg lg:rounded-3xl p-5 flex flex-col-reverse lg:flex-row gap-5 bg-foreground/10">
           <div className="flex flex-col shrink-0 gap-5 w-full lg:w-[25%] text-white">
             <h4 className="text-2xl font-semibold text-center">Perguntas</h4>
 
@@ -881,11 +897,73 @@ export default function Home() {
             </Dialog>
           </div>
 
-          <div className="w-full max-h-max rounded-xl flex items-center justify-center bg-background relative lg:aspect-video">
-            <div className="flex flex-col py-10 gap-2 lg:py-0  lg:gap-5 items-center w-full">
+          <div className={`w-full h-full max-h-max rounded-xl flex gap-2 items-center justify-center relative ${themeDarkMode ? 'bg-[hsl(261,92%,5%)]' : 'bg-[hsl(300,8%,90%)]'} lg:aspect-video`}>
+            <div className="absolute w-full h-full top-0 left-0">
+              {selectedTheme !== 'default' ? (
+                <Image src={selectedTheme} alt="bgimage" className="w-full h-full top-0 left-0 rounded-lg" fill quality={100} />
+              ) : (
+                <div className="w-full h-full absolute">
+                  <div className={`${themeDarkMode ? 'inline' : 'hidden'}`}>
+                    <ShootingStars />
+                    <StarsBackground starDensity={0.00025} twinkleProbability={0.4} />
+                  </div>
+
+                  <div className={`w-full h-full absolute top-0 left-0 ${themeDarkMode ? 'hidden' : 'flex'} items-center overflow-hidden blur-[1px] maskImageCircle`}>
+                    <ul className="w-full aspect-square grid grid-cols-[repeat(15,minmax(0,1fr))] grid-rows-[repeat(15,minmax(0,1fr))] scale-125">
+                      {Array.from({ length: (15 * 15) }).map((_, index) => (
+                        <li key={index} className={`border-b-2 border-r-2 border-[#cfbaf0] transition-all`}></li>
+                      ))}
+                    </ul>
+
+                    <Image src="/blob_gradient.png" alt="blob" width={500} height={500} className="absolute left-1/2 -translate-x-1/2 blur-2xl opacity-70" />
+                  </div>
+                </div>
+              )}
+
+              <div className="w-full h-full flex justify-between p-5 relative">
+                <div className="w-36 flex flex-col gap-2">
+                  <Button variant={"outline"} className="w-full hover:border-foreground active:scale-95 transition-transform"
+                    onClick={() => setThemesOpen(!themesOpen)}
+                  >
+                    Temas
+                  </Button>
+
+                  <div className={`w-full bg-white overflow-hidden rounded-lg ${themesOpen ? 'h-full' : 'h-0'} transition-all duration-300`}>
+                    <ul className="w-full grid grid-cols-1 gap-2 p-2">
+                      <li className='w-full aspect-video border border-foreground rounded-lg shadow-sm cursor-pointer grid place-items-center active:scale-95 transition-transform'
+                        onClick={() => setSelectedTheme('default')}
+                      >
+                        <Ban className="w-[75%] h-[75%] text-muted-foreground" />
+                      </li>
+
+                      {Themes.map((theme, index) => (
+                        <li key={index} className='w-full aspect-video border border-foreground rounded-lg shadow-sm cursor-pointer active:scale-95 transition-transform'
+                          onClick={() => setSelectedTheme(theme.path)}
+                        >
+                          <Image src={theme.path} alt={theme.title} width={300} height={300} className="rounded-lg" />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {selectedTheme === 'default' && (
+                  <div>
+                    {themeDarkMode ? (
+                      <MoonStar className="text-foreground transition-all" cursor={'pointer'} onClick={() => setThemeDarkMode(false)} />
+                    ) : (
+                      <Sun className="text-background transition-all" cursor={'pointer'} onClick={() => setThemeDarkMode(true)} />
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="w-fit h-fit flex flex-col p-10 gap-2 lg:gap-5 items-center justify-center relative border rounded-xl bg-background/70 backdrop-blur-sm">
+
               <h4 className="text-lg lg:text-3xl font-medium">Crie sua {questions.length === 0 && (<>primeira</>)} pergunta...</h4>
 
-              <div className="flex items-center px-2 py-1 border border-muted-foreground rounded-full w-[75%] lg:w-[55%] focus-within:w-[80%] lg:focus-within:w-[60%] focus-within:border-primary transition-all">
+              <div className="flex items-center px-2 py-1 border border-muted-foreground rounded-full w-[75%] focus-within:w-[80%] focus-within:border-primary transition-all">
                 <Input type="text" className="border-none focus-visible:ring-0 text-lg"
                   placeholder="Sua pergunta"
                   value={question}
@@ -899,7 +977,7 @@ export default function Home() {
                 <ArrowRightCircle size={32} className="text-muted-foreground hidden lg:inline-block" />
               </div>
 
-              <div className="flex flex-col items-start gap-5 text-center w-[75%] lg:w-[55%]">
+              <div className="flex flex-col items-start gap-5 text-center w-[75%]">
                 {inputHasValue && (
                   <>
                     <ul className="w-full grid grid-cols-2 gap-2">
@@ -940,7 +1018,7 @@ export default function Home() {
                 )}
               </div>
 
-              <Button className="w-[90%] lg:w-[25%] lg:hover:w-[30%] rounded-md focus-visible:ring-muted-foreground lg:focus-visible:w-[30%] transition-all"
+              <Button className="w-[90%] lg:hover:w-[95%] rounded-md focus-visible:ring-muted-foreground lg:focus-visible:w-[95%] transition-all"
                 onClick={handleQuestionCreate} disabled={!question || alternatives.length < 2 || !correctAlternative ? true : false}
               >
                 Criar Pergunta
@@ -974,6 +1052,7 @@ export default function Home() {
       <div className="relative w-full h-36 flex justify-center items-center px-4 sm:px-12 lg:px-32">
         <span>© Quizinho {format(new Date, 'yyyy')}</span>
       </div>
-    </main>
+
+    </main >
   )
 }

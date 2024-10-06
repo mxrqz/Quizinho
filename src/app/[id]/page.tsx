@@ -8,8 +8,8 @@ import Script from "next/script";
 const serverURL = 'http://localhost:3001'
 
 const fetchQuizData = cache(async (id: string) => {
-    const { quizinho, img, paid } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data
-    return { quizinho, img, paid }
+    const { quizinho, img, paid, theme } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data
+    return { quizinho, img, paid, theme }
 })
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
@@ -38,7 +38,7 @@ const QuizPage = async ({ params }: { params: { id: string } }) => {
                     crossOrigin="anonymous"></Script>
             )}
 
-            <QuizComponent quizinho={quizData.quizinho} />
+            <QuizComponent quizinho={quizData.quizinho} theme={quizData.theme} />
         </>
     );
 };
