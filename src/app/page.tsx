@@ -27,6 +27,8 @@ import { toast } from "sonner";
 import QuizinhoExample from "./quizinhoExample";
 import { Themes } from "./Themes";
 import Image from "next/image";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+
 
 interface Questions {
   question: string,
@@ -52,6 +54,9 @@ export default function Home() {
   const [selectedPlan, setSelectedPlan] = useState<"free" | "premium" | undefined>(undefined)
   const [customURL, setCustomURL] = useState<string>('')
   const [invalidURLS, setInvalidURLS] = useState<string[]>([])
+  const [themesOpen, setThemesOpen] = useState<boolean>(false)
+  const [selectedTheme, setSelectedTheme] = useState<string>('default')
+  const [themeDarkMode, setThemeDarkMode] = useState<boolean>(true)
 
   const router = useRouter()
   const pathname = usePathname()
@@ -147,6 +152,119 @@ export default function Home() {
     [searchParams]
   )
 
+  const Plans = () => {
+    return (
+      <>
+        <Card className={`w-[350px] h-[400px] bg-background relative overflow-hidden ${selectedPlan === "free" && "bg-foreground/10 border-violet-500"}`}>
+
+          <div className="absolute w-full h-full bg-foreground/50 top-0 left-0 noise opacity-50"></div>
+
+          <CardHeader className="relative">
+            <CardTitle className="flex gap-2 items-center">
+              <CircleUserRound />
+              Free
+            </CardTitle>
+
+            <CardDescription className="flex flex-col">
+              <span className="font-semibold text-xl">R$ 0</span>
+              <span className="font-medium">Grátis para sempre</span>
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="relative">
+            <ul className="flex flex-col gap-1">
+              <li className="flex flex-nowrap gap-2">
+                <X className="text-red-500" />
+                Todas funcionalidades
+              </li>
+
+              <li className="flex flex-nowrap gap-2">
+                <X className="text-red-500" />
+                Temas
+              </li>
+
+              <li className="flex flex-nowrap gap-2">
+                <X className="text-red-500" />
+                URL personalizada
+              </li>
+
+              <li className="flex flex-nowrap gap-2">
+                <X className="text-red-500" />
+                Página sem Anúncios
+              </li>
+
+              <li className="flex flex-nowrap gap-2">
+                <Check className="text-green-500" />
+                Disponível por 1 semana
+              </li>
+            </ul>
+          </CardContent>
+
+          <CardFooter className="relative">
+            <Button variant={"outline"} className="w-full border-white bg-transparent hover:bg-foreground hover:text-background"
+              onClick={() => setSelectedPlan("free")}
+            >
+              {selectedPlan === 'free' ? 'Selecionado' : 'Selecionar'}
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card className={`w-[350px] h-[400px] bg-background relative overflow-hidden ${selectedPlan === "premium" && "bg-foreground/10 border-violet-500"}`}>
+          <div className="absolute w-full h-full bg-foreground/50 top-0 left-0 noise opacity-50"></div>
+
+          <CardHeader className="relative">
+            <CardTitle className="flex gap-2 items-center">
+              <Crown />
+              Premium
+            </CardTitle>
+
+            <CardDescription className="flex flex-col">
+              <span className="font-semibold text-xl">R$ 5</span>
+              <span className="font-medium">Por Quizinho</span>
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="relative">
+            <ul className="flex flex-col gap-1">
+              <li className="flex flex-nowrap gap-2">
+                <Check className="text-green-500" />
+                Todas funcionalidades
+              </li>
+
+              <li className="flex flex-nowrap gap-2">
+                <Check className="text-green-500" />
+                Temas
+              </li>
+
+              <li className="flex flex-nowrap gap-2">
+                <Check className="text-green-500" />
+                URL personalizada
+              </li>
+
+              <li className="flex flex-nowrap gap-2">
+                <Check className="text-green-500" />
+                Página sem Anúncios
+              </li>
+
+              <li className="flex flex-nowrap gap-2">
+                <Check className="text-green-500" />
+                Disponível por 6 meses
+              </li>
+            </ul>
+          </CardContent>
+
+          <CardFooter className="relative">
+            <Button variant={"outline"} className="w-full border-white bg-transparent hover:bg-foreground hover:text-background"
+              onClick={() => setSelectedPlan("premium")}
+            >
+              {selectedPlan === 'premium' ? 'Selecionado' : 'Selecionar'}
+            </Button>
+          </CardFooter>
+        </Card>
+      </>
+    )
+  }
+
   // useEffect(() => {
   //   const qrCodeToPNG = async () => {
   //     const qrCodeElement = document.querySelector('qr-code');
@@ -200,10 +318,6 @@ export default function Home() {
 
     fetchInvalidURLS();
   }, [getInvalidURLS]);
-
-  const [themesOpen, setThemesOpen] = useState<boolean>(false)
-  const [selectedTheme, setSelectedTheme] = useState<string>('default')
-  const [themeDarkMode, setThemeDarkMode] = useState<boolean>(true)
 
   return (
     <main className="flex flex-col max-w-full h-full overflow-hidden relative">
@@ -383,7 +497,10 @@ export default function Home() {
         </section>
 
         <section className="w-full flex flex-col gap-12 items-center justify-center">
-          <h3 className="text-4xl font-medium">Temas</h3>
+          <div className="text-center flex flex-col gap-2">
+            <h3 className="text-4xl font-medium">Temas</h3>
+            <p className="text-lg font-normal text-muted-foreground">Escolha entre diversos temas para deixar seu Quizinho ainda mais divertido e personalizado!</p>
+          </div>
 
           <ul className="grid grid-cols-3 gap-10 w-full overflow-hidden">
             {Themes.map((theme, index) => (
@@ -396,6 +513,13 @@ export default function Home() {
           </ul>
         </section>
 
+        <section className="w-full flex flex-col items-center justify-center gap-12">
+          <h3 className="text-4xl font-medium">Planos</h3>
+
+          <div className="flex gap-12">
+            <Plans />
+          </div>
+        </section>
       </div>
 
       <section id="quizinho" className="relative flex w-full px-4 mt-32 sm:px-12 lg:px-32 2xl:px-64">
