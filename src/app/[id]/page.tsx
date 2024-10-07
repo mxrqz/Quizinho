@@ -4,8 +4,8 @@ import axios from 'axios';
 import QuizComponent from "./quizComponent";
 import Script from "next/script";
 
-const serverURL = 'https://api.quizinho.me';
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://api.quizinho.me';
+const serverURL = 'http://localhost:3001'
 
 const fetchQuizData = cache(async (id: string) => {
     const { quizinho, img, paid, theme } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data

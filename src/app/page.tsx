@@ -37,8 +37,8 @@ interface Questions {
 
 const questionsAmount = 4
 
-const serverURL = 'https://api.quizinho.me'
-// const serverURL = 'http://localhost:3001'
+// const serverURL = 'https://api.quizinho.me'
+const serverURL = 'http://localhost:3001'
 const quizinhoURL = 'quizinho.me/'
 
 export default function Home() {
@@ -171,9 +171,8 @@ export default function Home() {
   const Plans = () => {
     return (
       <>
-        <Card className={`w-[350px] h-[400px] bg-[#d6d0d5] dark:bg-[#20182d] relative overflow-hidden border border-muted-foreground ${selectedPlan === "free" && "border-violet-500 shadow-lg shadow-violet-500/30"} cursor-pointer`}
+        <Card className={`select-none w-[350px] h-[400px] bg-[#d6d0d5] dark:bg-[#20182d] relative overflow-hidden border border-muted-foreground ${selectedPlan === "free" && "border-violet-500 shadow-lg shadow-violet-500/30"} transition-all`}
           onMouseMove={(e) => trackMouse(e)}
-          onClick={() => setSelectedPlan("free")}
         >
           <div className="w-[700px] h-[800px] scale-150 absolute maskImageCircle2"
             style={{
@@ -220,21 +219,22 @@ export default function Home() {
 
               <li className="flex flex-nowrap gap-2">
                 <Check className="text-green-500" />
-                Disponível por 1 semana
+                Disponível por 7 dias
               </li>
             </ul>
           </CardContent>
 
           <CardFooter className="relative">
-            <Button variant={"outline"} className={`w-full border-none shadow-lg text-foreground bg-transparent hover:bg-transparent ${selectedPlan === "free" && 'shadow-violet-500'}`}>
+            <Button variant={"outline"} className={`w-full border-none shadow-lg text-foreground bg-transparent hover:bg-transparent ${selectedPlan === "free" && 'shadow-violet-500'} transition-all`}
+              onClick={() => setSelectedPlan("free")}
+            >
               {selectedPlan === 'free' ? 'Selecionado' : 'Selecionar'}
             </Button>
           </CardFooter>
         </Card>
 
-        <Card className={`w-[350px] h-[400px] bg-[#d6d0d5] dark:bg-[#20182d] relative overflow-hidden border border-muted-foreground ${selectedPlan === "premium" && "border-violet-500 shadow-lg shadow-violet-500/30"} cursor-pointer`}
+        <Card className={`select-none w-[350px] h-[400px] bg-[#d6d0d5] dark:bg-[#20182d] relative overflow-hidden border border-muted-foreground ${selectedPlan === "premium" && "border-violet-500 shadow-lg shadow-violet-500/30"} transition-all`}
           onMouseMove={(e) => trackMouse2(e)}
-          onClick={() => setSelectedPlan("premium")}
         >
 
           <div className="w-[700px] h-[800px] scale-150 absolute maskImageCircle2"
@@ -282,13 +282,15 @@ export default function Home() {
 
               <li className="flex flex-nowrap gap-2">
                 <Check className="text-green-500" />
-                Disponível por 6 meses
+                Disponível por 30 dias
               </li>
             </ul>
           </CardContent>
 
           <CardFooter className="relative">
-            <Button variant={"outline"} className={`w-full border-none shadow-lg text-foreground bg-transparent hover:bg-transparent ${selectedPlan === "premium" && 'shadow-violet-500'}`}>
+            <Button variant={"outline"} className={`w-full border-none shadow-lg text-foreground bg-transparent hover:bg-transparent ${selectedPlan === "premium" && 'shadow-violet-500'} transition-all`}
+              onClick={() => setSelectedPlan("premium")}
+            >
               {selectedPlan === 'premium' ? 'Selecionado' : 'Selecionar'}
             </Button>
           </CardFooter>
@@ -475,16 +477,15 @@ export default function Home() {
 
           </div>
         </section>
-      </div >
+      </div>
 
-      <div className="relative flex flex-col gap-32 w-full px-4 py-32 sm:px12 lg:px-32 2xl:px-64 bg-gradient-to-br from-foreground/10 to-background">
+      <div className="relative flex flex-col gap-32 w-full px-4 py-32 sm:px12 lg:px-32 2xl:px-64 bg-gradient-to-br from-foreground/10 to-background mask">
 
         <Image src={"/noise2.svg"} alt="noise" fill className="object-cover opacity-10" />
 
-        <section className="grid grid-cols-[50%,35%] justify-between gap-12 relative">
-          <div className="w-full flex flex-col border border-white rounded-2xl relative">
+        <section className="grid grid-rows-2 lg:grid-cols-[50%,35%] lg:grid-rows-1 justify-between gap-12 relative">
+          <div className="w-full lg:aspect-video flex flex-col border border-white rounded-lg lg:rounded-2xl relative">
             <div className="w-full h-12 bg-neutral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
-
               <div className="size-5">
                 <img src="./quizinho-light-purple.svg" alt="quizinho logo" />
               </div>
@@ -496,17 +497,17 @@ export default function Home() {
               </ul>
             </div>
 
-            <QuizinhoExample className="w-full h-full bg-background flex flex-col justify-center items-center overflow-hidden rounded-2xl" />
+            <QuizinhoExample className="w-full h-full bg-background flex flex-col justify-center items-center overflow-hidden rounded-b-lg lg:rounded-b-2xl" />
 
-            <div className="absolute bottom-0 right-0 translate-y-1/2 translate-x-1/2">
-              <Image src={"/quizinho-logo-alt.png"} alt="Quizinho logo" height={100} width={100} className="" />
+            <div className="absolute bottom-0 right-0 translate-y-1/2 lg:translate-x-1/2">
+              <Image src={"/quizinho-logo-alt.png"} alt="Quizinho logo" height={100} width={100} className="w-12 h-12 lg:w-full lg:h-full" />
             </div>
           </div>
 
           <div className="w-full flex flex-col gap-5">
-            <h3 className="text-4xl font-medium text-nowrap">Crie seu Quizinho</h3>
+            <h3 className="text-2xl lg:text-4xl font-medium text-nowrap">Crie seu Quizinho</h3>
 
-            <ul className="flex flex-col text-start text-xl gap-5">
+            <ul className="flex flex-col text-start text-lg lg:text-xl gap-5">
               <li className="flex items-start gap-2">
                 <Square className="shrink-0 w-2 fill-green-500 stroke-green-500" />
                 Seu Quizinho fácil e rápido: Não precisa de conta ou login para criar e compartilhar seu Quizinho.
@@ -532,11 +533,11 @@ export default function Home() {
 
         <section className="w-full flex flex-col gap-12 items-center justify-center relative">
           <div className="text-center flex flex-col gap-2">
-            <h3 className="text-4xl font-medium">Temas</h3>
-            <p className="text-lg font-normal text-muted-foreground">Escolha entre diversos temas para deixar seu Quizinho ainda mais divertido e personalizado!</p>
+            <h3 className="text-2xl lg:text-4xl font-medium">Temas</h3>
+            <p className="text-lg font-normal text-muted-foreground">Escolha entre diferentes temas e personalize seus Quizinhos do jeito que quiser!</p>
           </div>
 
-          <ul className="grid grid-cols-3 gap-10 w-full overflow-hidden">
+          <ul className="grid grid-cols-2 lg:grid-cols-3 gap-10 w-full overflow-hidden">
             {Themes.map((theme, index) => (
               <li key={index} className="flex flex-col gap-2 overflow-hidden">
                 <Image src={theme.path} alt={theme.title} width={1080} height={1080} className="w-full aspect-video bg-foreground/10 rounded-lg " />
@@ -548,235 +549,238 @@ export default function Home() {
         </section>
 
         <section className="w-full flex flex-col items-center justify-center gap-12 relative">
-          <h3 className="text-4xl font-medium">Planos</h3>
+          <div className="text-center flex flex-col gap-2">
+            <h3 className="text-2xl lg:text-4xl font-medium">Planos</h3>
+            <p className="text-lg font-normal text-muted-foreground">Selecione o plano ideal para você e aproveite todas as vantagens do Quizinho!</p>
+          </div>
 
-          <div className="flex gap-12">
+          <div className="flex flex-col lg:flex-row gap-12">
             <Plans />
           </div>
         </section>
       </div>
 
-      <section id="quizinho" className="relative flex w-full px-4 mt-32 sm:px-12 lg:px-32 2xl:px-64">
-        <div className="w-full overflow-hidden rounded-lg lg:rounded-3xl p-5 flex flex-col-reverse lg:flex-row gap-5 bg-foreground/10">
-          <div className="flex flex-col shrink-0 gap-5 w-full lg:w-[25%] text-white">
-            <h4 className="text-2xl font-semibold text-center">Perguntas</h4>
+      <section id="quizinho" className="relative flex flex-col-reverse lg:grid lg:grid-cols-[30%,70%] w-full lg:aspect-[16/5] px-4 mt-32 sm:px-12 lg:px-32 2xl:px-64">
+        <div className="w-full flex flex-col border border-foreground rounded-b-lg lg:rounded-r-none lg:rounded-l-2xl p-5">
+          <h4 className="text-2xl font-semibold text-center">Perguntas</h4>
 
-            <ScrollArea className="h-full">
-              {questions && questions.length > 0 && (
-                <Accordion type="single" defaultValue={questions[questions.length - 1].question} collapsible className="flex flex-col gap-5">
-                  {questions.map((question, index) => (
-                    <AccordionItem value={question.question} key={index} className="relative group flex flex-col gap-2">
+          <ScrollArea className="h-full">
+            {questions && questions.length > 0 && (
+              <Accordion type="single" defaultValue={questions[questions.length - 1].question} collapsible className="flex flex-col gap-5">
+                {questions.map((question, index) => (
+                  <AccordionItem value={question.question} key={index} className="relative group flex flex-col gap-2">
 
-                      <AccordionTrigger className="text-xl text-start break-all">{question.question}</AccordionTrigger>
+                    <AccordionTrigger className="text-xl text-start break-all">{question.question}</AccordionTrigger>
 
-                      <AccordionContent>
-                        <ul className="text-base flex flex-col gap-1">
-                          {question.alternatives.map((alternative, index) => (
-                            <li key={index} className="flex gap-2 items-center">
-                              <Checkbox name={alternative} checked={alternative === question.correctAlternative} disabled={alternative !== question.correctAlternative} />
-                              {alternative}
-                            </li>
-                          ))}
-                        </ul>
-                      </AccordionContent>
+                    <AccordionContent>
+                      <ul className="text-base flex flex-col gap-1">
+                        {question.alternatives.map((alternative, index) => (
+                          <li key={index} className="flex gap-2 items-center">
+                            <Checkbox name={alternative} checked={alternative === question.correctAlternative} disabled={alternative !== question.correctAlternative} />
+                            {alternative}
+                          </li>
+                        ))}
+                      </ul>
+                    </AccordionContent>
 
-                      <Popover>
-                        <PopoverTrigger className="aspect-square flex items-center justify-center rounded-md opacity-100 lg:opacity-100
-                            group-hover:opacity-100 transition-opacity absolute top-5 right-0 cursor-pointer">
-                          <EllipsisVertical className="text-white" />
-                        </PopoverTrigger>
+                    <Popover>
+                      <PopoverTrigger className="aspect-square flex items-center justify-center rounded-md opacity-100 lg:opacity-100
+                          group-hover:opacity-100 transition-opacity absolute top-5 right-0 cursor-pointer">
+                        <EllipsisVertical className="text-white" />
+                      </PopoverTrigger>
 
-                        <PopoverContent className="w-fit flex flex-col gap-3 border-muted-foreground">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant={'outline'} className="border-primary py-0 hover:bg-primary hover:border-transparent" onClick={() => handleEditStart(question)}>Editar</Button>
-                            </DialogTrigger>
+                      <PopoverContent className="w-fit flex flex-col gap-3 border-muted-foreground">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant={'outline'} className="border-primary py-0 hover:bg-primary hover:border-transparent" onClick={() => handleEditStart(question)}>Editar</Button>
+                          </DialogTrigger>
 
-                            <DialogContent className="w-fit flex flex-col">
-                              <DialogHeader>
-                                <DialogTitle>Editar Pergunta</DialogTitle>
-                                <DialogDescription>Tem certeza que deseja atualizar a pergunta?</DialogDescription>
-                              </DialogHeader>
+                          <DialogContent className="w-fit flex flex-col">
+                            <DialogHeader>
+                              <DialogTitle>Editar Pergunta</DialogTitle>
+                              <DialogDescription>Tem certeza que deseja atualizar a pergunta?</DialogDescription>
+                            </DialogHeader>
 
-                              <div className="flex flex-col gap-4 py-4">
-                                <div className="flex flex-col items-start gap-2">
-                                  <Label htmlFor="pergunta" className="text-start lg:text-right text-nowrap">Pergunta</Label>
-                                  <Input
-                                    className="col-span-3 h-full min-h-10 border-muted-foreground focus-visible:ring-primary focus-visible:border-none"
-                                    value={editingQuestion?.question}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                      if (editingQuestion) {
-                                        setEditingQuestion({
-                                          ...editingQuestion,
-                                          question: e.currentTarget.value
-                                        });
-                                      }
-                                    }}
-                                  />
-                                </div>
-
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
-                                  {editingQuestion?.alternatives.map((alternative, index) => (
-                                    <div key={index} className="flex flex-col items-start gap-2">
-                                      <Label htmlFor={alternative} className="text-start lg:text-right text-nowrap py-0 space-y-0">Alternativa {index + 1}</Label>
-
-                                      <div className="flex w-full gap-2">
-                                        <Input id={alternative}
-                                          value={alternative || ''}
-                                          className="h-9 border-muted-foreground focus-visible:border-none focus-visible:ring-primary"
-                                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                            const updatedAlternatives = editingQuestion?.alternatives.map(a => {
-                                              if (a === alternative) {
-                                                return e.currentTarget.value
-                                              }
-                                              return a
-                                            });
-
-                                            if (editingQuestion) {
-                                              setEditingQuestion({
-                                                ...editingQuestion,
-                                                alternatives: updatedAlternatives
-                                              });
-                                            }
-                                          }}
-                                        />
-
-                                        <Button className="border-muted-foreground p-0 size-9 aspect-square bg-red-500 lg:hover:bg-red-500 hover:border-transparent flex items-center justify-center rounded-md cursor-pointer focus-visible:bg-red-500"
-                                          onClick={() => {
-                                            const updatedAlternatives = editingQuestion?.alternatives.filter((_, i) => i !== index);
-                                            if (editingQuestion) {
-                                              setEditingQuestion({
-                                                ...editingQuestion,
-                                                alternatives: updatedAlternatives
-                                              });
-                                            }
-                                          }}
-                                        >
-                                          <Trash2 />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-
-                                {editingQuestion?.alternatives && editingQuestion?.alternatives.length < 4 && (
-                                  <Button variant={"outline"} className="border-muted-foreground hover:bg-primary hover:border-none focus-visible:ring-primary focus-visible:border-none hover:text-white focus-visible:bg-primary focus-visible:text-white col-span-4 lg:col-start-2 lg:col-span-3"
-                                    onClick={() => {
-                                      const newAlternative = '';
-                                      const updatedAlternatives = [...(editingQuestion?.alternatives || []), newAlternative];
-
-                                      if (editingQuestion) {
-                                        setEditingQuestion({
-                                          ...editingQuestion,
-                                          alternatives: updatedAlternatives
-                                        });
-                                      }
-                                    }}
-                                  >
-                                    <Plus />
-                                  </Button>
-                                )}
-
-                                <div>
-                                  <Label htmlFor='Seleciona a alternativa Correta' className="text-start lg:text-right text-nowrap py-0 space-y-0">Selecione a alternativa correta</Label>
-
-                                  <Select value={editingQuestion?.correctAlternative || ''}
-                                    onValueChange={(alternative) => {
-                                      setEditingQuestion(prevQ => {
-                                        if (prevQ) {
-                                          return {
-                                            ...prevQ,
-                                            correctAlternative: alternative,
-                                          };
-                                        }
-                                        return prevQ;
+                            <div className="flex flex-col gap-4 py-4">
+                              <div className="flex flex-col items-start gap-2">
+                                <Label htmlFor="pergunta" className="text-start lg:text-right text-nowrap">Pergunta</Label>
+                                <Input
+                                  className="col-span-3 h-full min-h-10 border-muted-foreground focus-visible:ring-primary focus-visible:border-none"
+                                  value={editingQuestion?.question}
+                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    if (editingQuestion) {
+                                      setEditingQuestion({
+                                        ...editingQuestion,
+                                        question: e.currentTarget.value
                                       });
-                                    }}
-                                  >
-                                    <SelectTrigger className="focus-visible:ring-primary focus-visible:border-none border-muted-foreground">
-                                      <SelectValue placeholder="Selecione a alternativa correta" />
-                                    </SelectTrigger>
-
-                                    <SelectContent>
-                                      {editingQuestion?.alternatives.map((alt, index) => (
-                                        alt.length > 0 ? <SelectItem key={index} value={alt || ''}>{alt || ''}</SelectItem> : ''
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-
+                                    }
+                                  }}
+                                />
                               </div>
 
-                              <DialogFooter className="flex flex-row justify-end gap-2">
-                                <DialogClose className="focus-visible:ring-0 ">
-                                  <Button
-                                    className="focus-visible:ring-primary border border-muted-foreground focus-visible:border-none"
-                                    variant={"secondary"}
-                                    type="reset"
-                                    onClick={handleEditCancel}
-                                  >
-                                    Cancel changes
-                                  </Button>
-                                </DialogClose>
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
+                                {editingQuestion?.alternatives.map((alternative, index) => (
+                                  <div key={index} className="flex flex-col items-start gap-2">
+                                    <Label htmlFor={alternative} className="text-start lg:text-right text-nowrap py-0 space-y-0">Alternativa {index + 1}</Label>
 
-                                <DialogClose>
-                                  <Button
-                                    className="focus-visible:ring-primary focus-visible:border-none"
-                                    onClick={handleEditConfirm}
-                                  >
-                                    Save changes
-                                  </Button>
-                                </DialogClose>
-                              </DialogFooter>
+                                    <div className="flex w-full gap-2">
+                                      <Input id={alternative}
+                                        value={alternative || ''}
+                                        className="h-9 border-muted-foreground focus-visible:border-none focus-visible:ring-primary"
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                          const updatedAlternatives = editingQuestion?.alternatives.map(a => {
+                                            if (a === alternative) {
+                                              return e.currentTarget.value
+                                            }
+                                            return a
+                                          });
 
-                            </DialogContent>
-                          </Dialog>
+                                          if (editingQuestion) {
+                                            setEditingQuestion({
+                                              ...editingQuestion,
+                                              alternatives: updatedAlternatives
+                                            });
+                                          }
+                                        }}
+                                      />
 
-                          <Button variant={'outline'} className="border-red-500 py-0 hover:bg-red-500 hover:border-transparent"
-                            onClick={() => {
-                              const updatedQuestions = questions?.filter((_, i) => i !== index);
-                              setQuestions(updatedQuestions)
-                            }}
-                          >
-                            Deletar
-                          </Button>
-                        </PopoverContent>
-                      </Popover>
+                                      <Button className="border-muted-foreground p-0 size-9 aspect-square bg-red-500 lg:hover:bg-red-500 hover:border-transparent flex items-center justify-center rounded-md cursor-pointer focus-visible:bg-red-500"
+                                        onClick={() => {
+                                          const updatedAlternatives = editingQuestion?.alternatives.filter((_, i) => i !== index);
+                                          if (editingQuestion) {
+                                            setEditingQuestion({
+                                              ...editingQuestion,
+                                              alternatives: updatedAlternatives
+                                            });
+                                          }
+                                        }}
+                                      >
+                                        <Trash2 />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
 
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              )}
-            </ScrollArea>
+                              {editingQuestion?.alternatives && editingQuestion?.alternatives.length < 4 && (
+                                <Button variant={"outline"} className="border-muted-foreground hover:bg-primary hover:border-none focus-visible:ring-primary focus-visible:border-none hover:text-white focus-visible:bg-primary focus-visible:text-white col-span-4 lg:col-start-2 lg:col-span-3"
+                                  onClick={() => {
+                                    const newAlternative = '';
+                                    const updatedAlternatives = [...(editingQuestion?.alternatives || []), newAlternative];
 
-            <Dialog defaultOpen={modalOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  className="bg-foreground text-background"
-                  disabled={questions.length < 2}
-                  onClick={() => router.push(pathname + '?' + createQueryString('modal', 'true'), { scroll: false })}
-                >
-                  Criar Quizinho
-                </Button>
-              </DialogTrigger>
+                                    if (editingQuestion) {
+                                      setEditingQuestion({
+                                        ...editingQuestion,
+                                        alternatives: updatedAlternatives
+                                      });
+                                    }
+                                  }}
+                                >
+                                  <Plus />
+                                </Button>
+                              )}
 
-              <DialogContent className="h-fit w-[80%] lg:w-fit rounded-md transition-all">
-                {!loading && !qrCodeURL && (
-                  <>
-                    <DialogHeader>
-                      <DialogTitle className="text-xl">Pronto para criar o seu Quizinho?</DialogTitle>
-                      <DialogDescription className="text-muted-foreground text-base text-justify text-pretty lg:text-left">
-                        Escolha uma das opções abaixo para continuar:
-                      </DialogDescription>
-                    </DialogHeader>
+                              <div>
+                                <Label htmlFor='Seleciona a alternativa Correta' className="text-start lg:text-right text-nowrap py-0 space-y-0">Selecione a alternativa correta</Label>
 
-                    {/* <div className="grid grid-cols-2 gap-2 max-h-full">
-                      <div className={`min-w-max rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "free" && "bg-foreground/10 border-white"}`}
+                                <Select value={editingQuestion?.correctAlternative || ''}
+                                  onValueChange={(alternative) => {
+                                    setEditingQuestion(prevQ => {
+                                      if (prevQ) {
+                                        return {
+                                          ...prevQ,
+                                          correctAlternative: alternative,
+                                        };
+                                      }
+                                      return prevQ;
+                                    });
+                                  }}
+                                >
+                                  <SelectTrigger className="focus-visible:ring-primary focus-visible:border-none border-muted-foreground">
+                                    <SelectValue placeholder="Selecione a alternativa correta" />
+                                  </SelectTrigger>
+
+                                  <SelectContent>
+                                    {editingQuestion?.alternatives.map((alt, index) => (
+                                      alt.length > 0 ? <SelectItem key={index} value={alt || ''}>{alt || ''}</SelectItem> : ''
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                            </div>
+
+                            <DialogFooter className="flex flex-row justify-end gap-2">
+                              <DialogClose className="focus-visible:ring-0 ">
+                                <Button
+                                  className="focus-visible:ring-primary border border-muted-foreground focus-visible:border-none"
+                                  variant={"secondary"}
+                                  type="reset"
+                                  onClick={handleEditCancel}
+                                >
+                                  Cancel changes
+                                </Button>
+                              </DialogClose>
+
+                              <DialogClose>
+                                <Button
+                                  className="focus-visible:ring-primary focus-visible:border-none"
+                                  onClick={handleEditConfirm}
+                                >
+                                  Save changes
+                                </Button>
+                              </DialogClose>
+                            </DialogFooter>
+
+                          </DialogContent>
+                        </Dialog>
+
+                        <Button variant={'outline'} className="border-red-500 py-0 hover:bg-red-500 hover:border-transparent"
+                          onClick={() => {
+                            const updatedQuestions = questions?.filter((_, i) => i !== index);
+                            setQuestions(updatedQuestions)
+                          }}
+                        >
+                          Deletar
+                        </Button>
+                      </PopoverContent>
+                    </Popover>
+
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            )}
+          </ScrollArea>
+
+          <Dialog defaultOpen={modalOpen}>
+            <DialogTrigger asChild>
+              <Button
+                className="bg-foreground text-background"
+                disabled={questions.length < 2}
+                onClick={() => router.push(pathname + '?' + createQueryString('modal', 'true'), { scroll: false })}
+              >
+                Criar Quizinho
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent className="h-fit w-[80%] lg:w-fit rounded-md transition-all">
+              {!loading && !qrCodeURL && (
+                <>
+                  <DialogHeader>
+                    <DialogTitle className="text-xl">Pronto para criar o seu Quizinho?</DialogTitle>
+                    <DialogDescription className="text-muted-foreground text-base text-justify text-pretty lg:text-left">
+                      Escolha uma das opções abaixo para continuar:
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <ScrollArea>
+                    <div className="flex gap-2 min-w-max lg:min-w-full">
+                      <div className={`w-52 lg:w-full min-h-max rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "free" && "bg-foreground/10 border-white"}`}
                         onClick={() => setSelectedPlan("free")}
                       >
                         <div className="absolute w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
 
-                        <div className="w-full flex flex-col gap-2 py-2 relative z-10">
+                        <div className="flex flex-col gap-2">
                           <div className="flex gap-2">
                             <CircleUserRound />
                             <span className="font-semibold text-foreground">Grátis</span>
@@ -785,9 +789,9 @@ export default function Home() {
                           <span className="text-xl font-semibold text-foreground">R$0</span>
                         </div>
 
-                        <Button className="bg-violet-500 hover:bg-violet-400 relative z-10">Selecionar</Button>
+                        <Button variant={"outline"} className="hidden lg:inline-flex border-white bg-transparent">Selecionar</Button>
 
-                        <ul className="flex flex-col gap-1 relative z-10">
+                        <ul className="flex flex-col gap-1">
                           <li className="flex flex-nowrap gap-2">
                             <X className="text-red-500" />
                             Todas funcionalidades
@@ -805,17 +809,17 @@ export default function Home() {
 
                           <li className="flex flex-nowrap gap-2">
                             <Check className="text-green-500" />
-                            Disponível por 1 semana
+                            Disponível por 7 dias
                           </li>
                         </ul>
                       </div>
 
-                      <div className={`min-w-max rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "premium" && "bg-foreground/10 border-white"}`}
+                      <div className={`w-52 lg:w-full min-h-max rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "premium" && "bg-foreground/10 border-white"}`}
                         onClick={() => setSelectedPlan("premium")}
                       >
                         <div className="absolute w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
 
-                        <div className="w-full flex flex-col gap-2 py-2 relative z-10">
+                        <div className="flex flex-col gap-2">
                           <div className="flex gap-2">
                             <Crown className="text-yellow-500" />
                             <span className="font-semibold text-foreground">Premium</span>
@@ -824,9 +828,9 @@ export default function Home() {
                           <span className="text-xl font-semibold text-foreground">R$5</span>
                         </div>
 
-                        <Button className="bg-violet-500 hover:bg-violet-400 relative z-10">Selecionar</Button>
+                        <Button variant={"outline"} className="hidden lg:inline-flex border-white bg-transparent">Selecionar</Button>
 
-                        <ul className="flex flex-col gap-1 relative z-10">
+                        <ul className="flex flex-col gap-1">
                           <li className="flex flex-nowrap gap-2">
                             <Check className="text-green-500" />
                             Todas funcionalidades
@@ -844,344 +848,261 @@ export default function Home() {
 
                           <li className="flex flex-nowrap gap-2">
                             <Check className="text-green-500" />
-                            Disponível por 6 meses
+                            Disponível por 30 dias
                           </li>
                         </ul>
                       </div>
-                    </div> */}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
 
-                    <ScrollArea>
-                      <div className="flex gap-2 min-w-max lg:min-w-full">
-                        <div className={`w-52 lg:w-full h-fit rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "free" && "bg-foreground/10 border-white"}`}
-                          onClick={() => setSelectedPlan("free")}
-                        >
-                          <div className="absolute w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
+                  <div className={`${selectedPlan !== 'premium' ? 'opacity-50' : 'opacity-100'} transition-opacity`}>
+                    <Label htmlFor="customUrl">Defina sua URL personalizada (Não use emojis ou caracteres especiais)</Label>
 
-                          <div className="flex flex-col gap-2">
-                            <div className="flex gap-2">
-                              <CircleUserRound />
-                              <span className="font-semibold text-foreground">Grátis</span>
-                            </div>
-
-                            <span className="text-xl font-semibold text-foreground">R$0</span>
-                          </div>
-
-                          <Button variant={"outline"} className="hidden lg:inline-flex border-white bg-transparent">Selecionar</Button>
-
-                          <ul className="flex flex-col gap-1">
-                            <li className="flex flex-nowrap gap-2">
-                              <X className="text-red-500" />
-                              Todas funcionalidades
-                            </li>
-
-                            <li className="flex flex-nowrap gap-2">
-                              <X className="text-red-500" />
-                              URL personalizada
-                            </li>
-
-                            <li className="flex flex-nowrap gap-2">
-                              <X className="text-red-500" />
-                              Página com Anúncios
-                            </li>
-
-                            <li className="flex flex-nowrap gap-2">
-                              <Check className="text-green-500" />
-                              Disponível por 1 semana
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div className={`w-52 lg:w-full h-fit rounded-lg p-5 flex flex-col gap-3 cursor-pointer overflow-hidden border relative ${selectedPlan === "premium" && "bg-foreground/10 border-white"}`}
-                          onClick={() => setSelectedPlan("premium")}
-                        >
-                          <div className="absolute w-full h-full bg-foreground/30 top-0 left-0 noise opacity-30"></div>
-
-                          <div className="flex flex-col gap-2">
-                            <div className="flex gap-2">
-                              <Crown className="text-yellow-500" />
-                              <span className="font-semibold text-foreground">Premium</span>
-                            </div>
-
-                            <span className="text-xl font-semibold text-foreground">R$5</span>
-                          </div>
-
-                          <Button variant={"outline"} className="hidden lg:inline-flex border-white bg-transparent">Selecionar</Button>
-
-                          <ul className="flex flex-col gap-1">
-                            <li className="flex flex-nowrap gap-2">
-                              <Check className="text-green-500" />
-                              Todas funcionalidades
-                            </li>
-
-                            <li className="flex flex-nowrap gap-2">
-                              <Check className="text-green-500" />
-                              URL personalizada
-                            </li>
-
-                            <li className="flex flex-nowrap gap-2">
-                              <Check className="text-green-500" />
-                              Página sem Anúncios
-                            </li>
-
-                            <li className="flex flex-nowrap gap-2">
-                              <Check className="text-green-500" />
-                              Disponível por 6 meses
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
-
-                    <div className={`${selectedPlan !== 'premium' ? 'opacity-50' : 'opacity-100'} transition-opacity`}>
-                      <Label htmlFor="customUrl">Defina sua URL personalizada (Não use emojis ou caracteres especiais)</Label>
-
-                      <div className={`border flex items-center px-2 gap-1 text-foreground/70 font-medium text-base rounded-md
-                        ${customURL.length < 5 || invalidURLS.includes(customURL) ? 'focus-within:border-red-500' : 'focus-within:border-violet-500'} 
-                      `}>
-                        <span>{quizinhoURL}</span>
-                        <Input id="customUrl"
-                          className={`border-none ring-0 focus-visible:ring-0 px-0 text-foreground font-medium text-base`}
-                          disabled={selectedPlan !== 'premium'}
-                          value={customURL || ''}
-                          onChange={(e) => {
-                            const sanitizedURL = e.currentTarget.value
-                              .replace(/\s+/g, '_')
-                              .replace(/[^a-zA-Z0-9-_]/g, '');
-                            setCustomURL(sanitizedURL);
-                          }}
-                        />
-                      </div>
-
-                      <div className={`${selectedPlan !== 'premium' ? 'opacity-0' : 'opacity-100'} transition-opacity`}>
-                        <div className={`text-sm flex items-center gap-2 ${customURL.length < 5 ? 'text-red-500' : 'text-green-500'}`}>
-                          <span>No mínimo 5 caracteres</span>
-                        </div>
-
-                        <div className={`text-sm flex items-center gap-2 ${(invalidURLS.includes(customURL) || customURL.length < 5) ? 'text-red-500' : 'text-green-500'}`}>
-                          <span>URL disponível</span>
-                        </div>
-                      </div>
+                    <div className={`border flex items-center px-2 gap-1 text-foreground/70 font-medium text-base rounded-md
+                      ${customURL.length < 5 || invalidURLS.includes(customURL) ? 'focus-within:border-red-500' : 'focus-within:border-violet-500'}`}
+                    >
+                      <span>{quizinhoURL}</span>
+                      <Input id="customUrl"
+                        className={`border-none ring-0 focus-visible:ring-0 px-0 text-foreground font-medium text-base`}
+                        disabled={selectedPlan !== 'premium'}
+                        value={customURL || ''}
+                        onChange={(e) => {
+                          const sanitizedURL = e.currentTarget.value
+                            .replace(/\s+/g, '_')
+                            .replace(/[^a-zA-Z0-9-_]/g, '');
+                          setCustomURL(sanitizedURL);
+                        }}
+                      />
                     </div>
 
-                    <DialogFooter className="flex flex-row justify-end gap-5 w-full">
-                      <DialogClose asChild>
-                        <Button variant={"outline"} className="w-fit">Cancelar</Button>
-                      </DialogClose>
-                      <Button onClick={handleCreateQuizinho} className="w-fit bg-violet-500 hover:bg-violet-400"
-                        disabled={!selectedPlan
-                          // || questions.length < 2
-                          || (selectedPlan === 'premium' && customURL.length < 5 || invalidURLS.includes(customURL.toLowerCase()))}
-                      >
-                        Criar
-                      </Button>
-                    </DialogFooter>
-                  </>
-                )}
-
-                {loading && !qrCodeURL && (
-                  <div className="w-full flex flex-col gap-5">
-                    <DialogHeader>
-                      <DialogTitle className="text-xl">Seu Quizinho está quase pronto!</DialogTitle>
-                      <DialogDescription className="text-muted-foreground text-base text-pretty text-justify lg:text-left">
-                        Estamos gerando o seu Quizinho!</DialogDescription>
-                    </DialogHeader>
-
-                    <Loader className={"self-center"} />
-                  </div>
-                )}
-
-                {!loading && qrCodeURL && (
-                  <>
-                    <DialogHeader>
-                      <DialogTitle className="text-lg">Seu Quizinho está pronto!</DialogTitle>
-                      <DialogDescription className="text-muted-foreground text-base text-justify text-pretty lg:text-left">
-                        Agora é só compartilhar com quem você ama!
-                        Use o QR code abaixo para enviar seu Quizinho e descobrir o quanto ele(a) te conhece.
-                      </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="w-full h-fit overflow-hidden flex flex-col items-center gap-5 justify-center">
-                      <div className="w-full lg:size-72 bg-white rounded-lg overflow-hidden">
-                        <div className="translate-x-1 translate-y-2 scale-110 ">
-                          <qr-code
-                            contents={qrCodeURL}
-                            squares
-                          />
-                        </div>
+                    <div className={`${selectedPlan !== 'premium' ? 'opacity-0' : 'opacity-100'} transition-opacity`}>
+                      <div className={`text-sm flex items-center gap-2 ${customURL.length < 5 ? 'text-red-500' : 'text-green-500'}`}>
+                        <span>No mínimo 5 caracteres</span>
                       </div>
 
-                      <div className="w-full lg:w-fit flex flex-col lg:flex-row justify-between items-center gap-5 lg:gap-2">
-                        <a href={qrCodeURL} target="_blank" className="w-full lg:w-fit bg-white text-black h-9 flex items-center px-3 text-nowrap rounded-md">
-                          <span>{qrCodeURL}</span>
-                        </a>
-
-                        <Button variant={"outline"} className="w-full lg:w-fit text-foreground border-foreground" onClick={() => {
-                          navigator.clipboard.writeText(qrCodeURL);
-                          toast.message('Link copiado para o Clipboard', {
-                            description: `Link: ${qrCodeURL}`,
-                          })
-                        }}>
-                          <Clipboard />
-                        </Button>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <WhatsappShareButton windowPosition="windowCenter" title="Quizinho - Crie um quiz para seu amorzinho" separator="" url={'https://trembalajobs.com/elojob'}>
-                          <WhatsappIcon round size={32} />
-                        </WhatsappShareButton>
-
-                        <TwitterShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
-                          <XIcon round size={32} />
-                        </TwitterShareButton>
-
-                        <FacebookShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
-                          <FacebookIcon round size={32} />
-                        </FacebookShareButton>
-
-                        <TelegramShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
-                          <TelegramIcon round size={32} />
-                        </TelegramShareButton>
-
-                        <LinkedinShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
-                          <LinkedinIcon round size={32} />
-                        </LinkedinShareButton>
+                      <div className={`text-sm flex items-center gap-2 ${(invalidURLS.includes(customURL) || customURL.length < 5) ? 'text-red-500' : 'text-green-500'}`}>
+                        <span>URL disponível</span>
                       </div>
                     </div>
-                  </>
-                )}
-
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          <div className={`w-full h-full max-h-max rounded-xl flex gap-2 items-center justify-center relative ${themeDarkMode ? 'bg-[hsl(261,92%,5%)]' : 'bg-[hsl(300,8%,90%)]'} lg:aspect-video`}>
-            <div className="absolute w-full h-full top-0 left-0">
-              {selectedTheme !== 'default' ? (
-                <Image src={selectedTheme} alt="bgimage" className="w-full h-full top-0 left-0 rounded-lg" fill quality={100} />
-              ) : (
-                <div className="w-full h-full absolute">
-                  <div className={`${themeDarkMode ? 'inline' : 'hidden'}`}>
-                    <ShootingStars />
-                    <StarsBackground starDensity={0.00025} twinkleProbability={0.4} />
                   </div>
 
-                  <div className={`w-full h-full absolute top-0 left-0 ${themeDarkMode ? 'hidden' : 'flex'} items-center overflow-hidden blur-[1px] maskImageCircle`}>
-                    <ul className="w-full aspect-square grid grid-cols-[repeat(15,minmax(0,1fr))] grid-rows-[repeat(15,minmax(0,1fr))] scale-125">
-                      {Array.from({ length: (15 * 15) }).map((_, index) => (
-                        <li key={index} className={`border-b-2 border-r-2 border-[#cfbaf0] transition-all`}></li>
-                      ))}
-                    </ul>
+                  <DialogFooter className="flex flex-row justify-end gap-5 w-full">
+                    <DialogClose asChild>
+                      <Button variant={"outline"} className="w-fit">Cancelar</Button>
+                    </DialogClose>
+                    <Button onClick={handleCreateQuizinho} className="w-fit bg-violet-500 hover:bg-violet-400"
+                      disabled={!selectedPlan
+                        // || questions.length < 2
+                        || (selectedPlan === 'premium' && customURL.length < 5 || invalidURLS.includes(customURL.toLowerCase()))}
+                    >
+                      Criar
+                    </Button>
+                  </DialogFooter>
+                </>
+              )}
 
-                    <Image src="/blob_gradient.png" alt="blob" width={500} height={500} className="absolute left-1/2 -translate-x-1/2 blur-2xl opacity-70" />
-                  </div>
+              {loading && !qrCodeURL && (
+                <div className="w-full flex flex-col gap-5">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl">Seu Quizinho está quase pronto!</DialogTitle>
+                    <DialogDescription className="text-muted-foreground text-base text-pretty text-justify lg:text-left">
+                      Estamos gerando o seu Quizinho!</DialogDescription>
+                  </DialogHeader>
+
+                  <Loader className={"self-center"} />
                 </div>
               )}
 
-              <div className="w-full h-full flex justify-between p-5 relative">
-                <div className="w-36 flex flex-col gap-2">
-                  <Button variant={"outline"} className="w-full hover:border-foreground active:scale-95 transition-transform"
-                    onClick={() => setThemesOpen(!themesOpen)}
-                  >
-                    Temas
-                  </Button>
+              {!loading && qrCodeURL && (
+                <>
+                  <DialogHeader>
+                    <DialogTitle className="text-lg">Seu Quizinho está pronto!</DialogTitle>
+                    <DialogDescription className="text-muted-foreground text-base text-justify text-pretty lg:text-left">
+                      Agora é só compartilhar com quem você ama!
+                      Use o QR code abaixo para enviar seu Quizinho e descobrir o quanto ele(a) te conhece.
+                    </DialogDescription>
+                  </DialogHeader>
 
-                  <div className={`w-full bg-white overflow-hidden rounded-lg ${themesOpen ? 'h-full' : 'h-0'} transition-all duration-300`}>
-                    <ul className="w-full grid grid-cols-1 gap-2 p-2">
-                      <li className='w-full aspect-video border border-foreground rounded-lg shadow-sm cursor-pointer grid place-items-center active:scale-95 transition-transform'
-                        onClick={() => setSelectedTheme('default')}
-                      >
-                        <Ban className="w-[75%] h-[75%] text-muted-foreground" />
-                      </li>
+                  <div className="w-full h-fit overflow-hidden flex flex-col items-center gap-5 justify-center">
+                    <div className="w-full lg:size-72 bg-white rounded-lg overflow-hidden">
+                      <div className="translate-x-1 translate-y-2 scale-110 ">
+                        <qr-code
+                          contents={qrCodeURL}
+                          squares
+                        />
+                      </div>
+                    </div>
 
-                      {Themes.map((theme, index) => (
-                        <li key={index} className='w-full aspect-video border border-foreground rounded-lg shadow-sm cursor-pointer active:scale-95 transition-transform'
-                          onClick={() => setSelectedTheme(theme.path)}
-                        >
-                          <Image src={theme.path} alt={theme.title} width={300} height={300} className="rounded-lg" />
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="w-full lg:w-fit flex flex-col lg:flex-row justify-between items-center gap-5 lg:gap-2">
+                      <a href={qrCodeURL} target="_blank" className="w-full lg:w-fit bg-white text-black h-9 flex items-center px-3 text-nowrap rounded-md">
+                        <span>{qrCodeURL}</span>
+                      </a>
+
+                      <Button variant={"outline"} className="w-full lg:w-fit text-foreground border-foreground" onClick={() => {
+                        navigator.clipboard.writeText(qrCodeURL);
+                        toast.message('Link copiado para o Clipboard', {
+                          description: `Link: ${qrCodeURL}`,
+                        })
+                      }}>
+                        <Clipboard />
+                      </Button>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <WhatsappShareButton windowPosition="windowCenter" title="Quizinho - Crie um quiz para seu amorzinho" separator="" url={'https://trembalajobs.com/elojob'}>
+                        <WhatsappIcon round size={32} />
+                      </WhatsappShareButton>
+
+                      <TwitterShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
+                        <XIcon round size={32} />
+                      </TwitterShareButton>
+
+                      <FacebookShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
+                        <FacebookIcon round size={32} />
+                      </FacebookShareButton>
+
+                      <TelegramShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
+                        <TelegramIcon round size={32} />
+                      </TelegramShareButton>
+
+                      <LinkedinShareButton title="Quizinho - Crie um quiz para seu amorzinho" url={qrCodeURL}>
+                        <LinkedinIcon round size={32} />
+                      </LinkedinShareButton>
+                    </div>
                   </div>
+                </>
+              )}
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className={`w-full h-full max-h-max rounded-t-lg lg:rounded-l-none lg:rounded-r-2xl border border-foreground flex gap-2 items-center justify-center relative ${themeDarkMode ? 'bg-[hsl(261,92%,5%)]' : 'bg-[hsl(300,8%,90%)]'} lg:aspect-video`}>
+          <div className="absolute w-full h-full top-0 left-0">
+            {selectedTheme !== 'default' ? (
+              <Image src={selectedTheme} alt="bgimage" className="w-full h-full top-0 left-0 rounded-r-2xl" fill quality={100} />
+            ) : (
+              <div className="w-full h-full absolute">
+                <div className={`${themeDarkMode ? 'inline' : 'hidden'}`}>
+                  <ShootingStars />
+                  <StarsBackground starDensity={0.00025} twinkleProbability={0.4} />
                 </div>
 
-                {selectedTheme === 'default' && (
-                  <div>
-                    {themeDarkMode ? (
-                      <MoonStar className="text-foreground transition-all" cursor={'pointer'} onClick={() => setThemeDarkMode(false)} />
-                    ) : (
-                      <Sun className="text-background transition-all" cursor={'pointer'} onClick={() => setThemeDarkMode(true)} />
-                    )}
+                <div className={`w-full h-full absolute top-0 left-0 ${themeDarkMode ? 'hidden' : 'flex'} items-center overflow-hidden blur-[1px] maskImageCircle`}>
+                  <ul className="w-full aspect-square grid grid-cols-[repeat(15,minmax(0,1fr))] grid-rows-[repeat(15,minmax(0,1fr))] scale-125">
+                    {Array.from({ length: (15 * 15) }).map((_, index) => (
+                      <li key={index} className={`border-b-2 border-r-2 border-[#cfbaf0] transition-all`}></li>
+                    ))}
+                  </ul>
+
+                  <Image src="/blob_gradient.png" alt="blob" width={500} height={500} className="absolute left-1/2 -translate-x-1/2 blur-2xl opacity-70" />
+                </div>
+              </div>
+            )}
+
+            <div className="w-full h-full flex justify-between p-5 relative">
+              <div className="w-36 flex flex-col gap-2">
+                <Button variant={"outline"} className="w-full hover:border-foreground active:scale-95 transition-transform"
+                  onClick={() => setThemesOpen(!themesOpen)}
+                >
+                  Temas
+                </Button>
+
+                <div className={`w-full bg-white overflow-hidden rounded-lg ${themesOpen ? 'h-full' : 'h-0'} transition-all duration-300`}>
+                  <ul className="w-full grid grid-cols-1 gap-2 p-2">
+                    <li className='w-full aspect-video border border-foreground rounded-lg shadow-sm cursor-pointer grid place-items-center active:scale-95 transition-transform'
+                      onClick={() => setSelectedTheme('default')}
+                    >
+                      <Ban className="w-[75%] h-[75%] text-muted-foreground" />
+                    </li>
+
+                    {Themes.map((theme, index) => (
+                      <li key={index} className='w-full aspect-video border border-foreground rounded-lg shadow-sm cursor-pointer active:scale-95 transition-transform'
+                        onClick={() => setSelectedTheme(theme.path)}
+                      >
+                        <Image src={theme.path} alt={theme.title} width={300} height={300} className="rounded-lg" />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {selectedTheme === 'default' && (
+                <div>
+                  {themeDarkMode ? (
+                    <MoonStar className="text-foreground transition-all" cursor={'pointer'} onClick={() => setThemeDarkMode(false)} />
+                  ) : (
+                    <Sun className="text-background transition-all" cursor={'pointer'} onClick={() => setThemeDarkMode(true)} />
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="w-fit h-fit flex flex-col p-10 gap-2 lg:gap-5 items-center justify-center relative border rounded-t-lg lg:rounded-r-2xl bg-background/70 backdrop-blur-sm">
+
+            <h4 className="text-lg lg:text-3xl font-medium">Crie sua {questions.length === 0 && (<>primeira</>)} pergunta...</h4>
+
+            <div className="flex items-center px-2 py-1 border border-muted-foreground rounded-full w-full lg:w-[75%] lg:focus-within:w-[80%] focus-within:border-primary transition-all">
+              <Input type="text" className="border-none focus-visible:ring-0 text-lg"
+                placeholder="Sua pergunta"
+                value={question}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const hasValue = e.currentTarget.value.length > 0;
+                  if (hasValue !== inputHasValue) {
+                    setInputHasValue(hasValue);
+                  }
+                  setQuestion(e.currentTarget.value)
+                }} />
+              <ArrowRightCircle size={32} className="text-muted-foreground hidden lg:inline-block" />
+            </div>
+
+            <div className="flex flex-col items-start gap-5 text-center w-full lg:w-[75%]">
+              {inputHasValue && (
+                <>
+                  <ul className="w-full grid lg:grid-cols-2 gap-2">
+                    {Array.from({ length: questionsAmount }).map((_, index) => (
+                      <li key={index} className="flex flex-col items-start w-full">
+                        <Label htmlFor={alternatives[index] || ''} className="cursor-pointer font-medium text-sm">{`Alternativa ${index + 1}`}</Label>
+                        <Input type="text"
+                          className="focus-visible:ring-primary focus-visible:border-none border-muted-foreground"
+                          placeholder="Sua alternativa"
+                          value={alternatives[index] || ''}
+                          onChange={(e: { target: { value: string; }; }) => {
+                            const newAlternatives = [...alternatives];
+                            newAlternatives[index] = e.target.value || '';
+                            setAlternatives(newAlternatives);
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="flex flex-col w-full items-start">
+                    <Label htmlFor='Seleciona a alternativa Correta' className="cursor-pointer font-medium text-sm">Selecione a alternativa correta</Label>
+
+                    <Select value={correctAlternative || undefined} onValueChange={(alternative) => setCorrectAlternative(alternative)}>
+                      <SelectTrigger className="focus-visible:ring-primary focus-visible:border-none border-muted-foreground">
+                        <SelectValue placeholder="Selecione a alternativa correta" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {alternatives.map((alt, index) => (
+                          <SelectItem key={index} value={alt || 'Nenhuma selecionada'}>{alt || 'Nenhuma selecionada'}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
                   </div>
-                )}
-              </div>
+                </>
+              )}
             </div>
 
-            <div className="w-fit h-fit flex flex-col p-10 gap-2 lg:gap-5 items-center justify-center relative border rounded-xl bg-background/70 backdrop-blur-sm">
-
-              <h4 className="text-lg lg:text-3xl font-medium">Crie sua {questions.length === 0 && (<>primeira</>)} pergunta...</h4>
-
-              <div className="flex items-center px-2 py-1 border border-muted-foreground rounded-full w-[75%] focus-within:w-[80%] focus-within:border-primary transition-all">
-                <Input type="text" className="border-none focus-visible:ring-0 text-lg"
-                  placeholder="Sua pergunta"
-                  value={question}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const hasValue = e.currentTarget.value.length > 0;
-                    if (hasValue !== inputHasValue) {
-                      setInputHasValue(hasValue);
-                    }
-                    setQuestion(e.currentTarget.value)
-                  }} />
-                <ArrowRightCircle size={32} className="text-muted-foreground hidden lg:inline-block" />
-              </div>
-
-              <div className="flex flex-col items-start gap-5 text-center w-[75%]">
-                {inputHasValue && (
-                  <>
-                    <ul className="w-full grid grid-cols-2 gap-2">
-                      {Array.from({ length: questionsAmount }).map((_, index) => (
-                        <li key={index} className="flex flex-col items-start w-full">
-                          <Label htmlFor={alternatives[index] || ''} className="cursor-pointer font-medium text-sm">{`Alternativa ${index + 1}`}</Label>
-                          <Input type="text"
-                            className="focus-visible:ring-primary focus-visible:border-none border-muted-foreground"
-                            placeholder="Sua alternativa"
-                            value={alternatives[index] || ''}
-                            onChange={(e: { target: { value: string; }; }) => {
-                              const newAlternatives = [...alternatives];
-                              newAlternatives[index] = e.target.value;
-                              setAlternatives(newAlternatives);
-                            }}
-                          />
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="flex flex-col w-full items-start">
-                      <Label htmlFor='Seleciona a alternativa Correta' className="cursor-pointer font-medium text-sm">Selecione a alternativa correta</Label>
-
-                      <Select value={correctAlternative} onValueChange={(alternative) => setCorrectAlternative(alternative)}>
-                        <SelectTrigger className="focus-visible:ring-primary focus-visible:border-none border-muted-foreground">
-                          <SelectValue placeholder="Selecione a alternativa correta" />
-                        </SelectTrigger>
-
-                        <SelectContent>
-                          {alternatives.map((alt, index) => (
-                            <SelectItem key={index} value={alt}>{alt}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                    </div>
-                  </>
-                )}
-              </div>
-
-              <Button className="w-[90%] lg:hover:w-[95%] rounded-md focus-visible:ring-muted-foreground lg:focus-visible:w-[95%] transition-all"
-                onClick={handleQuestionCreate} disabled={!question || alternatives.length < 2 || !correctAlternative ? true : false}
-              >
-                Criar Pergunta
-              </Button>
-            </div>
+            <Button className="w-[90%] lg:hover:w-[95%] rounded-md focus-visible:ring-muted-foreground lg:focus-visible:w-[95%] transition-all"
+              onClick={handleQuestionCreate} disabled={!question || alternatives.length < 2 || !correctAlternative ? true : false}
+            >
+              Criar Pergunta
+            </Button>
           </div>
         </div>
       </section>
@@ -1208,7 +1129,7 @@ export default function Home() {
       )}
 
       <div className="relative w-full h-36 flex justify-center items-center px-4 sm:px-12 lg:px-32">
-        <span>© Quizinho {format(new Date, 'yyyy')}</span>
+        <span>© Quizinho {format(new Date, 'yyyy')}. Todos os direitos reservados.</span>
       </div>
 
     </main >
