@@ -113,7 +113,6 @@
 }
 
 .noise-2 {
-  /* filter: contrast(240%) brightness(1000%); */
   background:
     linear-gradient(135deg, hsl(var(--background) / .95), hsl(var(--background) / .8)),
     url("/noise2.svg");

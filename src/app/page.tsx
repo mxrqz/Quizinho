@@ -1,6 +1,6 @@
 "use client"
 
-import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowRightCircle, Check, CircleUserRound, Crown, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X, Clipboard, Square, Ban } from "lucide-react";
 import LogoSvg from "@/components/svg";
@@ -27,8 +27,7 @@ import { toast } from "sonner";
 import QuizinhoExample from "./quizinhoExample";
 import { Themes } from "./Themes";
 import Image from "next/image";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Questions {
   question: string,
