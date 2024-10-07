@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowRightCircle, Check, CircleUserRound, Crown, EllipsisVertical, MoonStar, Plus, Sun, Trash2, X, Clipboard, Square, Ban } from "lucide-react";
 import LogoSvg from "@/components/svg";
@@ -152,12 +152,38 @@ export default function Home() {
     [searchParams]
   )
 
+  const [mousePosition, setMousePosition] = useState<{ x: number, y: number }>()
+  const [mousePosition2, setMousePosition2] = useState<{ x: number, y: number }>()
+
+  const trackMouse = (e: MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setMousePosition({ x, y })
+  }
+
+  const trackMouse2 = (e: MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setMousePosition2({ x, y })
+  }
+
   const Plans = () => {
     return (
       <>
-        <Card className={`w-[350px] h-[400px] bg-background relative overflow-hidden ${selectedPlan === "free" && "bg-foreground/10 border-violet-500"}`}>
-
-          <div className="absolute w-full h-full bg-foreground/50 top-0 left-0 noise opacity-50"></div>
+        <Card className={`w-[350px] h-[400px] bg-[#d6d0d5] dark:bg-[#20182d] relative overflow-hidden border border-muted-foreground ${selectedPlan === "free" && "border-violet-500 shadow-lg shadow-violet-500/30"} cursor-pointer`}
+          onMouseMove={(e) => trackMouse(e)}
+          onClick={() => setSelectedPlan("free")}
+        >
+          <div className="w-[700px] h-[800px] scale-150 absolute maskImageCircle2"
+            style={{
+              top: mousePosition ? `${mousePosition.y - 350}px` : '-400px',
+              left: mousePosition ? `${mousePosition.x - 400}px` : '-350px',
+            }}
+          >
+            <Image src={"/noise2.svg"} alt="noise" fill className="object-cover opacity-20" />
+          </div>
 
           <CardHeader className="relative">
             <CardTitle className="flex gap-2 items-center">
@@ -165,7 +191,7 @@ export default function Home() {
               Free
             </CardTitle>
 
-            <CardDescription className="flex flex-col">
+            <CardDescription className="flex flex-col text-foreground/70">
               <span className="font-semibold text-xl">R$ 0</span>
               <span className="font-medium">Grátis para sempre</span>
             </CardDescription>
@@ -201,24 +227,33 @@ export default function Home() {
           </CardContent>
 
           <CardFooter className="relative">
-            <Button variant={"outline"} className="w-full border-white bg-transparent hover:bg-foreground hover:text-background"
-              onClick={() => setSelectedPlan("free")}
-            >
+            <Button variant={"outline"} className={`w-full border-none shadow-lg text-foreground bg-transparent hover:bg-transparent ${selectedPlan === "free" && 'shadow-violet-500'}`}>
               {selectedPlan === 'free' ? 'Selecionado' : 'Selecionar'}
             </Button>
           </CardFooter>
         </Card>
 
-        <Card className={`w-[350px] h-[400px] bg-background relative overflow-hidden ${selectedPlan === "premium" && "bg-foreground/10 border-violet-500"}`}>
-          <div className="absolute w-full h-full bg-foreground/50 top-0 left-0 noise opacity-50"></div>
+        <Card className={`w-[350px] h-[400px] bg-[#d6d0d5] dark:bg-[#20182d] relative overflow-hidden border border-muted-foreground ${selectedPlan === "premium" && "border-violet-500 shadow-lg shadow-violet-500/30"} cursor-pointer`}
+          onMouseMove={(e) => trackMouse2(e)}
+          onClick={() => setSelectedPlan("premium")}
+        >
+
+          <div className="w-[700px] h-[800px] scale-150 absolute maskImageCircle2"
+            style={{
+              top: mousePosition2 ? `${mousePosition2.y - 350}px` : '-400px',
+              left: mousePosition2 ? `${mousePosition2.x - 400}px` : '0px',
+            }}
+          >
+            <Image src={"/noise2.svg"} alt="noise" fill className="object-cover opacity-20" />
+          </div>
 
           <CardHeader className="relative">
             <CardTitle className="flex gap-2 items-center">
-              <Crown />
+              <Crown className="text-yellow-500" />
               Premium
             </CardTitle>
 
-            <CardDescription className="flex flex-col">
+            <CardDescription className="flex flex-col text-foreground/70">
               <span className="font-semibold text-xl">R$ 5</span>
               <span className="font-medium">Por Quizinho</span>
             </CardDescription>
@@ -254,9 +289,7 @@ export default function Home() {
           </CardContent>
 
           <CardFooter className="relative">
-            <Button variant={"outline"} className="w-full border-white bg-transparent hover:bg-foreground hover:text-background"
-              onClick={() => setSelectedPlan("premium")}
-            >
+            <Button variant={"outline"} className={`w-full border-none shadow-lg text-foreground bg-transparent hover:bg-transparent ${selectedPlan === "premium" && 'shadow-violet-500'}`}>
               {selectedPlan === 'premium' ? 'Selecionado' : 'Selecionar'}
             </Button>
           </CardFooter>
@@ -445,9 +478,11 @@ export default function Home() {
         </section>
       </div >
 
-      <div className="relative flex flex-col gap-32 w-full px-4 py-32 sm:px12 lg:px-32 2xl:px-64 bg-foreground/5">
+      <div className="relative flex flex-col gap-32 w-full px-4 py-32 sm:px12 lg:px-32 2xl:px-64 bg-gradient-to-br from-foreground/10 to-background">
 
-        <section className="grid grid-cols-[50%,35%] justify-between gap-12">
+        <Image src={"/noise2.svg"} alt="noise" fill className="object-cover opacity-10" />
+
+        <section className="grid grid-cols-[50%,35%] justify-between gap-12 relative">
           <div className="w-full flex flex-col border border-white rounded-2xl relative">
             <div className="w-full h-12 bg-neutral-900 rounded-t-lg lg:rounded-t-2xl flex justify-between items-center relative px-2.5 lg:px-5">
 
@@ -496,7 +531,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full flex flex-col gap-12 items-center justify-center">
+        <section className="w-full flex flex-col gap-12 items-center justify-center relative">
           <div className="text-center flex flex-col gap-2">
             <h3 className="text-4xl font-medium">Temas</h3>
             <p className="text-lg font-normal text-muted-foreground">Escolha entre diversos temas para deixar seu Quizinho ainda mais divertido e personalizado!</p>
@@ -513,7 +548,7 @@ export default function Home() {
           </ul>
         </section>
 
-        <section className="w-full flex flex-col items-center justify-center gap-12">
+        <section className="w-full flex flex-col items-center justify-center gap-12 relative">
           <h3 className="text-4xl font-medium">Planos</h3>
 
           <div className="flex gap-12">
