@@ -1,10 +1,10 @@
 import './loader.css'
 
 interface Loader {
-    className: string
+    className?: string
 }
 
-export default function Loader({ className }: Loader) {
+export default function Loader({ className = '' }: Loader) {
 
     return (
         <div className={`loader ${className}`}>

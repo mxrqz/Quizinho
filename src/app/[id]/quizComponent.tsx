@@ -107,6 +107,7 @@ const QuizComponent = ({ quizinho, theme }: { quizinho: Questions[], theme: stri
                 <div className="absolute hidden lg:flex flex-col items-center gap-5 rounded-t-xl bg-neutral-900 p-5 bottom-0 right-4 text-black transition-transform">
                     <div className="size-44 overflow-hidden bg-white rounded-md">
                         <div className="scale-110 translate-x-0.5 translate-y-0.5 relative">
+                            {/* @ts-ignore */}
                             <qr-code
                                 contents={currentUrl.href}
                                 squares
@@ -268,6 +269,7 @@ const QuizComponent = ({ quizinho, theme }: { quizinho: Questions[], theme: stri
                         <div className="w-full max-w-96 flex flex-col items-center gap-5">
                             <div className="size-44 overflow-hidden bg-white rounded-md">
                                 <div className="scale-110 translate-x-0.5 translate-y-0.5 relative">
+                                    {/* @ts-ignore */}
                                     <qr-code
                                         contents={currentUrl.href}
                                         squares

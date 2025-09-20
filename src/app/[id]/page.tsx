@@ -4,16 +4,15 @@ import axios from 'axios';
 import QuizComponent from "./quizComponent";
 import Script from "next/script";
 
-const serverURL = 'https://api.quizinho.me';
-// const serverURL = 'http://localhost:3001'
-
+// Using internal Next.js API routes instead of external server
 const fetchQuizData = cache(async (id: string) => {
-    const { quizinho, img, paid, theme } = (await axios.get(`${serverURL}/get-quizinho/${id}`)).data
+    const { quizinho, img, paid, theme } = (await axios.get(`/api/get-quizinho/${id}`)).data
     return { quizinho, img, paid, theme }
 })
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-    const quizData = await fetchQuizData(params.id)
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
+    const quizData = await fetchQuizData(id)
 
     return {
         title: "Será que você acerta meu Quizinho?",
@@ -26,8 +25,9 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     };
 }
 
-const QuizPage = async ({ params }: { params: { id: string } }) => {
-    const quizData = await fetchQuizData(params.id);
+const QuizPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+    const { id } = await params;
+    const quizData = await fetchQuizData(id);
 
     return (
         <>
